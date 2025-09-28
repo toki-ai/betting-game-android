@@ -1,20 +1,20 @@
-package com.example.bettinggame;
+package com.example.bettinggame.model;
 
 public class RaceResult {
-    private Horse horse;
+    private Duck duck;
     private int rank;
     private double amountWon;
 
     // Constructor
-    public RaceResult(Horse horse, int rank, double amountWon) {
-        this.horse = horse;
+    public RaceResult(Duck duck, int rank, double amountWon) {
+        this.duck = duck;
         this.rank = rank;
         this.amountWon = amountWon;
     }
 
     // Getters
-    public Horse getHorse() { // Cập nhật getter
-        return horse;
+    public Duck getDuck() {
+        return duck;
     }
 
     public int getRank() {
@@ -25,14 +25,14 @@ public class RaceResult {
         return amountWon;
     }
 
-    // public void setHorse(Horse horse) { this.horse = horse; }
+    // public void setDuck(Duck duck) { this.duck = duck; }
     // public void setRank(int rank) { this.rank = rank; }
     // public void setAmountWon(double amountWon) { this.amountWon = amountWon; }
 
     @Override
     public String toString() {
         return "RaceResult{" +
-               "horse=" + (horse != null ? horse.getName() : "N/A") +
+               "duck=" + (duck != null ? duck.getName() : "N/A") +
                ", rank=" + rank +
                ", amountWon=" + amountWon +
                '}';
