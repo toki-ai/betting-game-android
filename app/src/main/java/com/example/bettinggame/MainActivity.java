@@ -11,6 +11,8 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
+
 import java.util.Random;
 
 
@@ -19,8 +21,7 @@ public class MainActivity extends AppCompatActivity {
     private SeekBar[] seekBars;
     private ImageView[] animals;
     private Handler handler = new Handler();
-    private Random random = new Random();
-    private boolean isRacing = false;
+    private boolean raceFinished = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,10 +30,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         seekBars = new SeekBar[]{
-                findViewById(R.id.seek1),
-                findViewById(R.id.seek2),
-                findViewById(R.id.seek3),
-                findViewById(R.id.seek4),
+                findViewById(R.id.seekBar1),
+                findViewById(R.id.seekBar2),
+                findViewById(R.id.seekBar3),
+                findViewById(R.id.seekBar4),
         };
 
         animals = new ImageView[]{
@@ -43,75 +44,58 @@ public class MainActivity extends AppCompatActivity {
         };
 
         Button btnStart = findViewById(R.id.btnStart);
-        btnStart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!isRacing) {
-                    startRace();
-                }
-            }
-        });
-    }
-
-    private Runnable raceRunnable = new Runnable() {
-        @Override
-        public void run() {
-            boolean finished = false;
-            for (int i = 0; i < seekBars.length; i++) {
-                if (seekBars[i].getProgress() < seekBars[i].getMax()) {
-                    // Random smooth increment
-                    int step = random.nextInt(5) + 1;
-                    seekBars[i].setProgress(seekBars[i].getProgress() + step);
-                }
-
-                if (seekBars[i].getProgress() >= seekBars[i].getMax()) {
-                    finished = true;
-                    stopRace(i);
-                    break;
-                }
-            }
-
-            if (!finished) {
-                handler.postDelayed(this, 50); // smooth update
-            }
-        }
-    };
-
-    private void stopRace(int winnerIndex) {
-        isRacing = false;
-        handler.removeCallbacks(raceRunnable);
-
-        // Switch all animals to idle
-        for (int j = 0; j < animals.length; j++) {
-            int resId = getResources().getIdentifier(
-                    "animal" + (j + 1) + "_idle",
-                    "drawable",
-                    getPackageName()
-            );
-            animals[j].setImageResource(resId);
-        }
-
-        Toast.makeText(this, "Animal " + (winnerIndex + 1) + " wins!", Toast.LENGTH_SHORT).show();
+        btnStart.setOnClickListener(v -> startRace());
     }
 
     private void startRace() {
-        isRacing = true;
+        raceFinished = false;
 
-        // Reset seekbars
-        for (SeekBar sb : seekBars) {
-            sb.setProgress(0);
+        for (int i = 0; i < 4; i++) {
+            int index = i;
+
+            // Reset seekBars
+            seekBars[i].setProgress(0);
+
+            // Switch to running GIF
+            int runResId = getResources().getIdentifier("animal" + (i + 1) + "_run", "drawable", getPackageName());
+            Glide.with(this).asGif().load(runResId).into(animals[i]);
+
+            int speed = new Random().nextInt(3) + 2; // random speed 2–4
+
+            handler.postDelayed(new Runnable() {
+                int progress = 0;
+
+                @Override
+                public void run() {
+                    if (raceFinished) return;
+
+                    progress += speed;
+                    if (progress <= 100) {
+                        seekBars[index].setProgress(progress);
+
+                        // Move sprite along seekBar
+                        int barWidth = seekBars[index].getWidth() - animals[index].getWidth();
+                        float posX = seekBars[index].getX() + (progress / 100f) * barWidth;
+                        animals[index].setX(posX);
+
+                        handler.postDelayed(this, 50);
+                    } else {
+                        raceFinished = true;
+                        announceWinner(index);
+                    }
+                }
+            }, 50);
         }
-
-        // Switch all animals to running GIF
-        for (int i = 0; i < animals.length; i++) {
-            int resId = getResources().getIdentifier(
-                    "animal" + (i + 1) + "_run",
-                    "drawable",
-                    getPackageName()
-            );
-            animals[i].setImageResource(resId);
-        }
-
-        handler.postDelayed(raceRunnable, 100);
     }
+
+    private void announceWinner(int winnerIndex) {
+        // Reset all animals to idle
+        for (int j = 0; j < animals.length; j++) {
+            int idleResId = getResources().getIdentifier("animal" + (j + 1) + "_idle", "drawable", getPackageName());
+            Glide.with(this).load(idleResId).into(animals[j]);
+        }
+
+        Toast.makeText(this, "🏆 Winner: Animal " + (winnerIndex + 1), Toast.LENGTH_LONG).show();
+    }
+
 }
