@@ -60,10 +60,11 @@ public class MainActivity extends AppCompatActivity {
             int runResId = getResources().getIdentifier("animal" + (i + 1) + "_run", "drawable", getPackageName());
             Glide.with(this).asGif().load(runResId).into(animals[i]);
 
-            int speed = new Random().nextInt(3) + 2; // random speed 2–4
+            // Random speed factor (smaller = slower, smoother)
+            float speed = (new Random().nextInt(3) + 2) * 0.1f; // 0.2 – 0.4 per tick
 
             handler.postDelayed(new Runnable() {
-                int progress = 0;
+                float progress = 0;
 
                 @Override
                 public void run() {
@@ -71,20 +72,20 @@ public class MainActivity extends AppCompatActivity {
 
                     progress += speed;
                     if (progress <= 100) {
-                        seekBars[index].setProgress(progress);
+                        seekBars[index].setProgress((int) progress);
 
-                        // Move sprite along seekBar
+                        // Move sprite smoothly
                         int barWidth = seekBars[index].getWidth() - animals[index].getWidth();
                         float posX = seekBars[index].getX() + (progress / 100f) * barWidth;
                         animals[index].setX(posX);
 
-                        handler.postDelayed(this, 50);
+                        handler.postDelayed(this, 16); // ~60 FPS smoothness
                     } else {
                         raceFinished = true;
                         announceWinner(index);
                     }
                 }
-            }, 50);
+            }, 16);
         }
     }
 
