@@ -114,6 +114,18 @@
                 android:layout_gravity="bottom|start"
                 android:layout_margin="8dp"
                 android:text="Đặt"/>
+
+            <TextView
+                android:id="@+id/tvBet1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|start"
+                android:layout_marginStart="8dp"
+                android:background="#66000000"
+                android:textColor="#FFFFFF"
+                android:padding="6dp"
+                android:text="0"
+                android:visibility="gone"/>
         </FrameLayout>
 
         <!-- lane 2 -->
@@ -144,6 +156,18 @@
                 android:layout_gravity="bottom|start"
                 android:layout_margin="8dp"
                 android:text="Đặt"/>
+
+            <TextView
+                android:id="@+id/tvBet2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|start"
+                android:layout_marginStart="8dp"
+                android:background="#66000000"
+                android:textColor="#FFFFFF"
+                android:padding="6dp"
+                android:text="0"
+                android:visibility="gone"/>
         </FrameLayout>
 
         <!-- lane 3 -->
@@ -174,6 +198,18 @@
                 android:layout_gravity="bottom|start"
                 android:layout_margin="8dp"
                 android:text="Đặt"/>
+
+            <TextView
+                android:id="@+id/tvBet3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|start"
+                android:layout_marginStart="8dp"
+                android:background="#66000000"
+                android:textColor="#FFFFFF"
+                android:padding="6dp"
+                android:text="0"
+                android:visibility="gone"/>
         </FrameLayout>
 
         <!-- lane 4 -->
@@ -204,6 +240,18 @@
                 android:layout_gravity="bottom|start"
                 android:layout_margin="8dp"
                 android:text="Đặt"/>
+
+            <TextView
+                android:id="@+id/tvBet4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|start"
+                android:layout_marginStart="8dp"
+                android:background="#66000000"
+                android:textColor="#FFFFFF"
+                android:padding="6dp"
+                android:text="0"
+                android:visibility="gone"/>
         </FrameLayout>
 
     </LinearLayout>

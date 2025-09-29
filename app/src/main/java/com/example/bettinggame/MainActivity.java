@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     // Betting UI
     // Per-lane bet buttons (mở dialog nhập tiền)
     private Button btnBet1, btnBet2, btnBet3, btnBet4, btnCancelBet;
+    private TextView tvBet1, tvBet2, tvBet3, tvBet4;
     private TextView tvBalance, tvResult;
     private View betPanel;
     private int selectedDuckIndex = 0; // 0..3
@@ -94,6 +95,10 @@ public class MainActivity extends AppCompatActivity {
         btnBet3 = findViewById(R.id.btnBet3);
         btnBet4 = findViewById(R.id.btnBet4);
         btnCancelBet = findViewById(R.id.btnCancelBet);
+        tvBet1 = findViewById(R.id.tvBet1);
+        tvBet2 = findViewById(R.id.tvBet2);
+        tvBet3 = findViewById(R.id.tvBet3);
+        tvBet4 = findViewById(R.id.tvBet4);
 
         // Thiết lập chọn đặt cược qua dialog, chỉ cho phép một lựa chọn.
         btnBet1.setOnClickListener(v -> promptBetForDuck(0));
@@ -333,6 +338,8 @@ public class MainActivity extends AppCompatActivity {
             }
             selectedDuckIndex = duckIndex;
             currentBetAmount = amount;
+            updateBetLabels();
+            updateBetButtonsVisibility();
             Toast.makeText(this, "Đã chọn vịt " + (duckIndex + 1) + ": " + betManager.formatInt(amount), Toast.LENGTH_SHORT).show();
         });
 
@@ -347,12 +354,42 @@ public class MainActivity extends AppCompatActivity {
         }
         selectedDuckIndex = -1;
         currentBetAmount = 0;
+        updateBetLabels();
+        updateBetButtonsVisibility();
         Toast.makeText(this, "Đã hủy cược", Toast.LENGTH_SHORT).show();
     }
 
     private void clearCurrentBet() {
         selectedDuckIndex = -1;
         currentBetAmount = 0;
+        updateBetLabels();
+        updateBetButtonsVisibility();
+    }
+
+    private void updateBetLabels() {
+        // Ẩn tất cả trước
+        if (tvBet1 != null) { tvBet1.setVisibility(View.GONE); tvBet1.setText("0"); }
+        if (tvBet2 != null) { tvBet2.setVisibility(View.GONE); tvBet2.setText("0"); }
+        if (tvBet3 != null) { tvBet3.setVisibility(View.GONE); tvBet3.setText("0"); }
+        if (tvBet4 != null) { tvBet4.setVisibility(View.GONE); tvBet4.setText("0"); }
+
+        // Hiện nhãn ở con đã chọn
+        if (currentBetAmount > 0 && selectedDuckIndex >= 0) {
+            String text = betManager.formatInt(currentBetAmount);
+            if (selectedDuckIndex == 0 && tvBet1 != null) { tvBet1.setText(text); tvBet1.setVisibility(View.VISIBLE); }
+            if (selectedDuckIndex == 1 && tvBet2 != null) { tvBet2.setText(text); tvBet2.setVisibility(View.VISIBLE); }
+            if (selectedDuckIndex == 2 && tvBet3 != null) { tvBet3.setText(text); tvBet3.setVisibility(View.VISIBLE); }
+            if (selectedDuckIndex == 3 && tvBet4 != null) { tvBet4.setText(text); tvBet4.setVisibility(View.VISIBLE); }
+        }
+    }
+
+    private void updateBetButtonsVisibility() {
+        // Khi đã chọn 1 con: ẩn nút Đặt của con đó, giữ các con khác để có thể bấm -> nhưng cấm bằng thông báo
+        // Theo yêu cầu: chỉ hiện lại nút đặt khi hủy
+        if (btnBet1 != null) btnBet1.setVisibility(selectedDuckIndex == 0 && currentBetAmount > 0 ? View.GONE : View.VISIBLE);
+        if (btnBet2 != null) btnBet2.setVisibility(selectedDuckIndex == 1 && currentBetAmount > 0 ? View.GONE : View.VISIBLE);
+        if (btnBet3 != null) btnBet3.setVisibility(selectedDuckIndex == 2 && currentBetAmount > 0 ? View.GONE : View.VISIBLE);
+        if (btnBet4 != null) btnBet4.setVisibility(selectedDuckIndex == 3 && currentBetAmount > 0 ? View.GONE : View.VISIBLE);
     }
 
     private void handlePayout(int winnerIndex, int betAmount) {
