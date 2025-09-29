@@ -66,11 +66,25 @@
 
         </LinearLayout>
 
-        <Button
-            android:id="@+id/btnStart"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Bắt đầu đua" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
+            <Button
+                android:id="@+id/btnStart"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Bắt đầu đua" />
+            <Button
+                android:id="@+id/btnCancelBet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hủy cược"
+                android:layout_marginStart="8dp"/>
+        </LinearLayout>
 
         <!-- lane 1 -->
         <FrameLayout
@@ -93,16 +107,13 @@
                 android:layout_gravity="center_vertical"
                 android:src="@drawable/animal1_idle"/>
 
-            <EditText
-                android:id="@+id/etBet1"
-                android:layout_width="120dp"
+            <Button
+                android:id="@+id/btnBet1"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|start"
                 android:layout_margin="8dp"
-                android:hint="Bet"
-                android:inputType="number"
-                android:padding="8dp"
-                android:background="#CCFFFFFF"/>
+                android:text="Đặt"/>
         </FrameLayout>
 
         <!-- lane 2 -->
@@ -126,16 +137,13 @@
                 android:layout_gravity="center_vertical"
                 android:src="@drawable/animal2_idle"/>
 
-            <EditText
-                android:id="@+id/etBet2"
-                android:layout_width="120dp"
+            <Button
+                android:id="@+id/btnBet2"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|start"
                 android:layout_margin="8dp"
-                android:hint="Bet"
-                android:inputType="number"
-                android:padding="8dp"
-                android:background="#CCFFFFFF"/>
+                android:text="Đặt"/>
         </FrameLayout>
 
         <!-- lane 3 -->
@@ -159,16 +167,13 @@
                 android:layout_gravity="center_vertical"
                 android:src="@drawable/animal3_idle"/>
 
-            <EditText
-                android:id="@+id/etBet3"
-                android:layout_width="120dp"
+            <Button
+                android:id="@+id/btnBet3"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|start"
                 android:layout_margin="8dp"
-                android:hint="Bet"
-                android:inputType="number"
-                android:padding="8dp"
-                android:background="#CCFFFFFF"/>
+                android:text="Đặt"/>
         </FrameLayout>
 
         <!-- lane 4 -->
@@ -192,16 +197,13 @@
                 android:layout_gravity="center_vertical"
                 android:src="@drawable/animal4_idle"/>
 
-            <EditText
-                android:id="@+id/etBet4"
-                android:layout_width="120dp"
+            <Button
+                android:id="@+id/btnBet4"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|start"
                 android:layout_margin="8dp"
-                android:hint="Bet"
-                android:inputType="number"
-                android:padding="8dp"
-                android:background="#CCFFFFFF"/>
+                android:text="Đặt"/>
         </FrameLayout>
 
     </LinearLayout>
