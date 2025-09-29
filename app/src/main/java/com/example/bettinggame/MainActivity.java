@@ -136,6 +136,7 @@ public class MainActivity extends AppCompatActivity {
         // Thông báo vui tuỳ theo mức tiền cược
         Toast.makeText(this, getBetTaunt(betAmount), Toast.LENGTH_SHORT).show();
         tvResult.setText("Đang đua... Chúc may mắn!");
+        tvResult.setVisibility(View.VISIBLE);
         // Ẩn panel đặt cược để người chơi theo dõi đường đua rõ ràng
         if (betPanel != null) betPanel.setVisibility(View.GONE);
 
@@ -401,6 +402,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             tvResult.setText("Bạn thua cược. Vịt " + (winnerIndex + 1) + " về nhất.");
         }
+        tvResult.setVisibility(View.VISIBLE);
         updateBalanceText();
     }
 
