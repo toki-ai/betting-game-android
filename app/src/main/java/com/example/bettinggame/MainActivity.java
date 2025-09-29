@@ -5,7 +5,11 @@ import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
@@ -42,6 +46,13 @@ public class MainActivity extends AppCompatActivity {
     private Button btnStart;
     private boolean raceRunning = false; // prevents multiple starts
 
+    // Betting UI
+    private RadioGroup rgDucks;
+    private EditText etBetAmount;
+    private TextView tvBalance, tvResult;
+    private int selectedDuckIndex = 0; // 0..3
+    private int balance = 1000; // tiền khởi tạo
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,16 +83,50 @@ public class MainActivity extends AppCompatActivity {
 
         btnStart = findViewById(R.id.btnStart);
         btnStart.setOnClickListener(v -> startRace());
+
+        // Ánh xạ view đặt cược
+        rgDucks = findViewById(R.id.rgDucks);
+        etBetAmount = findViewById(R.id.etBetAmount);
+        tvBalance = findViewById(R.id.tvBalance);
+        tvResult = findViewById(R.id.tvResult);
+
+        // Cập nhật text số dư ban đầu
+        updateBalanceText();
+
+        // Lắng nghe radio để biết vịt được chọn
+        rgDucks.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.rbDuck1) selectedDuckIndex = 0;
+            else if (checkedId == R.id.rbDuck2) selectedDuckIndex = 1;
+            else if (checkedId == R.id.rbDuck3) selectedDuckIndex = 2;
+            else if (checkedId == R.id.rbDuck4) selectedDuckIndex = 3;
+        });
     }
 
     private void startRace() {
         // Nếu đang chạy thì không làm gì
         if (raceRunning) return;
 
-        // bật cờ chạy, disable button
+        // Lấy tiền cược và kiểm tra hợp lệ trước khi bắt đầu đua
+        int betAmount = parseBetAmount();
+        if (betAmount <= 0) {
+            Toast.makeText(this, "Nhập tiền cược hợp lệ (>0)", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (betAmount > balance) {
+            Toast.makeText(this, "Tiền cược vượt quá số dư", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Trừ tiền cược ngay khi bắt đầu để tránh spam đổi kết quả
+        balance -= betAmount;
+        updateBalanceText();
+        tvResult.setText("Đang đua... Chúc may mắn!");
+
+        // bật cờ chạy, disable button và các control đặt cược
         raceRunning = true;
         btnStart.setEnabled(false);
-        btnStart.setText("Racing...");
+        btnStart.setText("Đang đua...");
+        setBettingControlsEnabled(false);
 
         // remove previous callbacks (reset)
         handler.removeCallbacksAndMessages(null);
@@ -149,6 +194,8 @@ public class MainActivity extends AppCompatActivity {
                             raceFinished = true;
                             stopAllRunnables();
                             announceWinner(index);
+                            // Tính payout đơn giản: nếu chọn đúng -> nhận 2x tiền cược, sai -> mất cược
+                            handlePayout(index, betAmount);
                         }
                     }
                 }
@@ -208,7 +255,9 @@ public class MainActivity extends AppCompatActivity {
         runOnUiThread(() -> {
             raceRunning = false;
             btnStart.setEnabled(true);
-            btnStart.setText("Start Race");
+            btnStart.setText("Bắt đầu đua");
+            // Mở lại control đặt cược
+            setBettingControlsEnabled(true);
         });
     }
 
@@ -219,6 +268,41 @@ public class MainActivity extends AppCompatActivity {
             Glide.with(this).load(idleResId).into(animals[j]);
         }
 
-        Toast.makeText(this, "🏆 Winner: Animal " + (winnerIndex + 1), Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "🏆 Vịt thắng: " + (winnerIndex + 1), Toast.LENGTH_LONG).show();
+    }
+
+    // ====== Betting helpers ======
+    private void updateBalanceText() {
+        tvBalance.setText("Balance: " + balance);
+    }
+
+    private int parseBetAmount() {
+        try {
+            String s = etBetAmount.getText().toString().trim();
+            if (s.isEmpty()) return 0;
+            return Integer.parseInt(s);
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    private void setBettingControlsEnabled(boolean enabled) {
+        for (int i = 0; i < rgDucks.getChildCount(); i++) {
+            View child = rgDucks.getChildAt(i);
+            child.setEnabled(enabled);
+        }
+        etBetAmount.setEnabled(enabled);
+    }
+
+    private void handlePayout(int winnerIndex, int betAmount) {
+        // Nếu chọn đúng vịt thắng -> + 2x tiền cược (lợi nhuận ròng = +betAmount)
+        boolean win = (winnerIndex == selectedDuckIndex);
+        if (win) {
+            balance += betAmount * 2;
+            tvResult.setText("Bạn thắng! +" + (betAmount) + ". Vịt " + (winnerIndex + 1) + " về nhất.");
+        } else {
+            tvResult.setText("Bạn thua cược. Vịt " + (winnerIndex + 1) + " về nhất.");
+        }
+        updateBalanceText();
     }
 }

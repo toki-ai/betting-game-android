@@ -35,11 +35,94 @@
         android:layout_height="match_parent"
         android:padding="16dp">
 
+        <!-- Panel đặt cược: chọn vịt, nhập tiền cược, hiển thị số dư & kết quả -->
+        <LinearLayout
+            android:id="@+id/betPanel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="12dp"
+            android:background="#80FFFFFF"
+            android:elevation="2dp"
+            android:layout_marginBottom="12dp">
+
+            <TextView
+                android:id="@+id/tvBalance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Balance: 1000"
+                android:textStyle="bold"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Chọn vịt muốn cược:"/>
+
+            <RadioGroup
+                android:id="@+id/rgDucks"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/rbDuck1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Vịt 1"
+                    android:checked="true"/>
+                <RadioButton
+                    android:id="@+id/rbDuck2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Vịt 2"/>
+                <RadioButton
+                    android:id="@+id/rbDuck3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Vịt 3"/>
+                <RadioButton
+                    android:id="@+id/rbDuck4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Vịt 4"/>
+            </RadioGroup>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tiền cược:"/>
+
+                <EditText
+                    android:id="@+id/etBetAmount"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:inputType="number"
+                    android:hint="Nhập số tiền"/>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvResult"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Kết quả sẽ hiển thị ở đây"
+                android:textStyle="italic"
+                android:layout_marginTop="6dp"/>
+
+        </LinearLayout>
+
         <Button
             android:id="@+id/btnStart"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Start Race" />
+            android:text="Bắt đầu đua" />
 
         <!-- lane 1 -->
         <FrameLayout
