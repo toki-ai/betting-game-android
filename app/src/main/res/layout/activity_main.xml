@@ -1,97 +1,133 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:paddingTop="16dp">
 
-    <Button
-        android:id="@+id/btnStart"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Start Race" />
-
-    <FrameLayout
+    <!-- Background chạy loop -->
+    <ImageView
+        android:id="@+id/bg1"
         android:layout_width="match_parent"
-        android:layout_height="72dp"
-        android:layout_marginBottom="12dp">
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/background"/>
 
-        <SeekBar
-            android:id="@+id/seekBar1"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:progressDrawable="@drawable/blur_seekbar"
-            android:thumb="@android:color/transparent"
-            android:max="100"/>
-
-        <ImageView
-            android:id="@+id/animal1"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
-            android:layout_gravity="center_vertical"
-            android:src="@drawable/animal1_idle"/>
-    </FrameLayout>
-
-    <FrameLayout
+    <ImageView
+        android:id="@+id/bg2"
         android:layout_width="match_parent"
-        android:layout_height="72dp"
-        android:layout_marginBottom="12dp">
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/background"/>
 
-        <SeekBar
-            android:id="@+id/seekBar2"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:progressDrawable="@drawable/blur_seekbar"
-            android:thumb="@android:color/transparent"
-            android:max="100"/>
+    <!-- Vạch đích (sẽ được di chuyển từ ngoài màn hình vào và dừng tại target) -->
+    <View
+        android:id="@+id/finishLine"
+        android:layout_width="32dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        android:background="@drawable/finish_line"
+        android:visibility="gone" />
 
-        <ImageView
-            android:id="@+id/animal2"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
-            android:layout_gravity="center_vertical"
-            android:src="@drawable/animal2_idle"/>
-    </FrameLayout>
-
-    <FrameLayout
+    <!-- Foreground: Nút + đường đua -->
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="72dp"
-        android:layout_marginBottom="12dp">
+        android:layout_height="match_parent"
+        android:padding="16dp">
 
-        <SeekBar
-            android:id="@+id/seekBar3"
+        <Button
+            android:id="@+id/btnStart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Start Race" />
+
+        <!-- lane 1 -->
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:progressDrawable="@drawable/blur_seekbar"
-            android:thumb="@android:color/transparent"
-            android:max="100"/>
-
-        <ImageView
-            android:id="@+id/animal3"
-            android:layout_width="72dp"
             android:layout_height="72dp"
-            android:layout_gravity="center_vertical"
-            android:src="@drawable/animal3_idle"/>
-    </FrameLayout>
+            android:layout_marginBottom="12dp">
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="72dp"
-        android:layout_marginBottom="12dp">
+            <SeekBar
+                android:id="@+id/seekBar1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:progressDrawable="@drawable/blur_seekbar"
+                android:thumb="@android:color/transparent"
+                android:max="100"/>
 
-        <SeekBar
-            android:id="@+id/seekBar4"
+            <ImageView
+                android:id="@+id/animal1"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/animal1_idle"/>
+        </FrameLayout>
+
+        <!-- lane 2 -->
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:progressDrawable="@drawable/blur_seekbar"
-            android:thumb="@android:color/transparent"
-            android:max="100"/>
-
-        <ImageView
-            android:id="@+id/animal4"
-            android:layout_width="72dp"
             android:layout_height="72dp"
-            android:layout_gravity="center_vertical"
-            android:src="@drawable/animal4_idle"/>
-    </FrameLayout>
-</LinearLayout>
+            android:layout_marginBottom="12dp">
+
+            <SeekBar
+                android:id="@+id/seekBar2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:progressDrawable="@drawable/blur_seekbar"
+                android:thumb="@android:color/transparent"
+                android:max="100"/>
+
+            <ImageView
+                android:id="@+id/animal2"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/animal2_idle"/>
+        </FrameLayout>
+
+        <!-- lane 3 -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:layout_marginBottom="12dp">
+
+            <SeekBar
+                android:id="@+id/seekBar3"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:progressDrawable="@drawable/blur_seekbar"
+                android:thumb="@android:color/transparent"
+                android:max="100"/>
+
+            <ImageView
+                android:id="@+id/animal3"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/animal3_idle"/>
+        </FrameLayout>
+
+        <!-- lane 4 -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:layout_marginBottom="12dp">
+
+            <SeekBar
+                android:id="@+id/seekBar4"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:progressDrawable="@drawable/blur_seekbar"
+                android:thumb="@android:color/transparent"
+                android:max="100"/>
+
+            <ImageView
+                android:id="@+id/animal4"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/animal4_idle"/>
+        </FrameLayout>
+
+    </LinearLayout>
+</FrameLayout>
