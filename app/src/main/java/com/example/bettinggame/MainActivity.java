@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvBet1, tvBet2, tvBet3, tvBet4;
     private TextView tvBalance, tvResult;
     private View betPanel;
-    private int selectedDuckIndex = 0; // 0..3
+    private int selectedDuckIndex = -1; // chưa chọn
     // Tách sang BetManager để quản lý số dư và validate/payout
     private BetManager betManager = new BetManager(1000);
 
@@ -106,6 +106,10 @@ public class MainActivity extends AppCompatActivity {
         btnBet3.setOnClickListener(v -> promptBetForDuck(2));
         btnBet4.setOnClickListener(v -> promptBetForDuck(3));
         btnCancelBet.setOnClickListener(v -> cancelCurrentBet());
+
+        // Khởi tạo hiển thị lần đầu
+        updateBetLabels();
+        updateBetButtonsVisibility();
 
         // Cập nhật text số dư ban đầu
         updateBalanceText();
@@ -175,8 +179,9 @@ public class MainActivity extends AppCompatActivity {
             bgHandler.post(finishRunnable);
         });
 
-        // Chốt tiền cược cho vòng này để dùng trong inner class (phải là final/effectively final)
+        // Chốt tiền cược và lựa chọn cho vòng này để dùng trong inner class (phải là final/effectively final)
         final int betForRace = betAmount;
+        final int chosenDuckAtStart = selectedDuckIndex;
 
         // start each animal's progress + sprite
         for (int i = 0; i < animals.length; i++) {
@@ -213,10 +218,10 @@ public class MainActivity extends AppCompatActivity {
                         // Nếu progress vượt 100 -> thắng theo luật bạn đặt
                         if (!raceFinished) {
                             raceFinished = true;
+                            // Tính payout trước khi reset trạng thái để không mất lựa chọn
+                            handlePayout(index, betForRace, chosenDuckAtStart);
                             stopAllRunnables();
                             announceWinner(index);
-                            // Tính payout đơn giản: nếu chọn đúng -> nhận 2x tiền cược, sai -> mất cược
-                            handlePayout(index, betForRace);
                         }
                     }
                 }
@@ -282,6 +287,16 @@ public class MainActivity extends AppCompatActivity {
             // Hiện lại panel đặt cược và xoá tiền cược cũ để vòng mới rõ ràng
             if (betPanel != null) betPanel.setVisibility(View.VISIBLE);
             clearCurrentBet();
+
+            // Đưa vạch đích và các vịt về vị trí ban đầu
+            if (finishLine != null) finishLine.setVisibility(View.GONE);
+            for (int i = 0; i < animals.length; i++) {
+                try {
+                    seekBars[i].setProgress(0);
+                    // Vị trí bắt đầu = mép trái của seekbar
+                    animals[i].setX(seekBars[i].getX());
+                } catch (Exception ignored) {}
+            }
         });
     }
 
@@ -393,9 +408,9 @@ public class MainActivity extends AppCompatActivity {
         if (btnBet4 != null) btnBet4.setVisibility(selectedDuckIndex == 3 && currentBetAmount > 0 ? View.GONE : View.VISIBLE);
     }
 
-    private void handlePayout(int winnerIndex, int betAmount) {
+    private void handlePayout(int winnerIndex, int betAmount, int chosenIndex) {
         // Nếu chọn đúng vịt thắng -> + 2x tiền cược (lợi nhuận ròng = +betAmount)
-        boolean win = (winnerIndex == selectedDuckIndex);
+        boolean win = (winnerIndex == chosenIndex);
         int profit = betManager.settle(win, betAmount);
         if (win) {
             tvResult.setText("Bạn thắng! +" + betManager.formatInt(profit) + ". Vịt " + (winnerIndex + 1) + " về nhất.");
