@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     private RadioGroup rgDucks;
     private EditText etBetAmount;
     private TextView tvBalance, tvResult;
+    private View betPanel;
     private int selectedDuckIndex = 0; // 0..3
     private int balance = 1000; // tiền khởi tạo
 
@@ -89,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
         etBetAmount = findViewById(R.id.etBetAmount);
         tvBalance = findViewById(R.id.tvBalance);
         tvResult = findViewById(R.id.tvResult);
+        betPanel = findViewById(R.id.betPanel);
 
         // Cập nhật text số dư ban đầu
         updateBalanceText();
@@ -121,6 +123,8 @@ public class MainActivity extends AppCompatActivity {
         balance -= betAmount;
         updateBalanceText();
         tvResult.setText("Đang đua... Chúc may mắn!");
+        // Ẩn panel đặt cược để người chơi theo dõi đường đua rõ ràng
+        if (betPanel != null) betPanel.setVisibility(View.GONE);
 
         // bật cờ chạy, disable button và các control đặt cược
         raceRunning = true;
@@ -258,6 +262,9 @@ public class MainActivity extends AppCompatActivity {
             btnStart.setText("Bắt đầu đua");
             // Mở lại control đặt cược
             setBettingControlsEnabled(true);
+            // Hiện lại panel đặt cược và xoá tiền cược cũ để vòng mới rõ ràng
+            if (betPanel != null) betPanel.setVisibility(View.VISIBLE);
+            if (etBetAmount != null) etBetAmount.setText("");
         });
     }
 
