@@ -18,6 +18,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 
+import java.text.NumberFormat;
+import java.util.Locale;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
@@ -53,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     private View betPanel;
     private int selectedDuckIndex = 0; // 0..3
     private int balance = 1000; // tiền khởi tạo
+    private final NumberFormat intFormatter = NumberFormat.getIntegerInstance(Locale.getDefault());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,12 +113,15 @@ public class MainActivity extends AppCompatActivity {
 
         // Lấy tiền cược và kiểm tra hợp lệ trước khi bắt đầu đua
         int betAmount = parseBetAmount();
-        if (betAmount <= 0) {
-            Toast.makeText(this, "Nhập tiền cược hợp lệ (>0)", Toast.LENGTH_SHORT).show();
+        // Validate chặt chẽ: tối thiểu 100, tối đa = balance hiện có
+        if (betAmount < 100) {
+            etBetAmount.setError("Tối thiểu 100");
+            Toast.makeText(this, "Tiền cược tối thiểu là 100", Toast.LENGTH_SHORT).show();
             return;
         }
         if (betAmount > balance) {
-            Toast.makeText(this, "Tiền cược vượt quá số dư", Toast.LENGTH_SHORT).show();
+            etBetAmount.setError("Vượt số dư hiện có");
+            Toast.makeText(this, "Tiền cược không được vượt quá số dư", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -280,14 +286,20 @@ public class MainActivity extends AppCompatActivity {
 
     // ====== Betting helpers ======
     private void updateBalanceText() {
-        tvBalance.setText("Balance: " + balance);
+        tvBalance.setText("Balance: " + intFormatter.format(balance));
     }
 
     private int parseBetAmount() {
         try {
-            String s = etBetAmount.getText().toString().trim();
-            if (s.isEmpty()) return 0;
-            return Integer.parseInt(s);
+            String raw = etBetAmount.getText().toString();
+            if (raw == null) return 0;
+            // Cho phép người dùng nhập có dấu phân tách ("," hoặc ".") hoặc ký tự khác -> lọc chỉ lấy chữ số
+            String digitsOnly = raw.replaceAll("[^0-9]", "");
+            if (digitsOnly.isEmpty()) return 0;
+            // Ép về giới hạn int an toàn
+            long value = Long.parseLong(digitsOnly);
+            if (value > Integer.MAX_VALUE) value = Integer.MAX_VALUE;
+            return (int) value;
         } catch (Exception e) {
             return 0;
         }
@@ -306,7 +318,7 @@ public class MainActivity extends AppCompatActivity {
         boolean win = (winnerIndex == selectedDuckIndex);
         if (win) {
             balance += betAmount * 2;
-            tvResult.setText("Bạn thắng! +" + (betAmount) + ". Vịt " + (winnerIndex + 1) + " về nhất.");
+            tvResult.setText("Bạn thắng! +" + intFormatter.format(betAmount) + ". Vịt " + (winnerIndex + 1) + " về nhất.");
         } else {
             tvResult.setText("Bạn thua cược. Vịt " + (winnerIndex + 1) + " về nhất.");
         }
