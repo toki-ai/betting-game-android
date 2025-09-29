@@ -17,9 +17,8 @@ import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+import com.example.bettinggame.bet.BetManager;
 
-import java.text.NumberFormat;
-import java.util.Locale;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
@@ -54,8 +53,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvBalance, tvResult;
     private View betPanel;
     private int selectedDuckIndex = 0; // 0..3
-    private int balance = 1000; // tiền khởi tạo
-    private final NumberFormat intFormatter = NumberFormat.getIntegerInstance(Locale.getDefault());
+    // Tách sang BetManager để quản lý số dư và validate/payout
+    private BetManager betManager = new BetManager(1000);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,22 +111,19 @@ public class MainActivity extends AppCompatActivity {
         if (raceRunning) return;
 
         // Lấy tiền cược và kiểm tra hợp lệ trước khi bắt đầu đua
-        int betAmount = parseBetAmount();
-        // Validate chặt chẽ: tối thiểu 100, tối đa = balance hiện có
-        if (betAmount < 100) {
-            etBetAmount.setError("Tối thiểu 100");
-            Toast.makeText(this, "Tiền cược tối thiểu là 100", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (betAmount > balance) {
-            etBetAmount.setError("Vượt số dư hiện có");
-            Toast.makeText(this, "Tiền cược không được vượt quá số dư", Toast.LENGTH_SHORT).show();
+        int betAmount = betManager.parseAmount(etBetAmount.getText() != null ? etBetAmount.getText().toString() : "");
+        BetManager.ValidationResult vr = betManager.validateBet(betAmount);
+        if (!vr.valid) {
+            if (etBetAmount != null) etBetAmount.setError(vr.message);
+            Toast.makeText(this, vr.message != null ? vr.message : "Tiền cược không hợp lệ", Toast.LENGTH_SHORT).show();
             return;
         }
 
         // Trừ tiền cược ngay khi bắt đầu để tránh spam đổi kết quả
-        balance -= betAmount;
+        betManager.applyBetStart(betAmount);
         updateBalanceText();
+        // Thông báo vui tuỳ theo mức tiền cược
+        Toast.makeText(this, getBetTaunt(betAmount), Toast.LENGTH_SHORT).show();
         tvResult.setText("Đang đua... Chúc may mắn!");
         // Ẩn panel đặt cược để người chơi theo dõi đường đua rõ ràng
         if (betPanel != null) betPanel.setVisibility(View.GONE);
@@ -286,24 +282,10 @@ public class MainActivity extends AppCompatActivity {
 
     // ====== Betting helpers ======
     private void updateBalanceText() {
-        tvBalance.setText("Balance: " + intFormatter.format(balance));
+        tvBalance.setText("Balance: " + betManager.formatInt(betManager.getBalance()));
     }
 
-    private int parseBetAmount() {
-        try {
-            String raw = etBetAmount.getText().toString();
-            if (raw == null) return 0;
-            // Cho phép người dùng nhập có dấu phân tách ("," hoặc ".") hoặc ký tự khác -> lọc chỉ lấy chữ số
-            String digitsOnly = raw.replaceAll("[^0-9]", "");
-            if (digitsOnly.isEmpty()) return 0;
-            // Ép về giới hạn int an toàn
-            long value = Long.parseLong(digitsOnly);
-            if (value > Integer.MAX_VALUE) value = Integer.MAX_VALUE;
-            return (int) value;
-        } catch (Exception e) {
-            return 0;
-        }
-    }
+    // parseBetAmount -> đã chuyển sang BetManager
 
     private void setBettingControlsEnabled(boolean enabled) {
         for (int i = 0; i < rgDucks.getChildCount(); i++) {
@@ -316,12 +298,19 @@ public class MainActivity extends AppCompatActivity {
     private void handlePayout(int winnerIndex, int betAmount) {
         // Nếu chọn đúng vịt thắng -> + 2x tiền cược (lợi nhuận ròng = +betAmount)
         boolean win = (winnerIndex == selectedDuckIndex);
+        int profit = betManager.settle(win, betAmount);
         if (win) {
-            balance += betAmount * 2;
-            tvResult.setText("Bạn thắng! +" + intFormatter.format(betAmount) + ". Vịt " + (winnerIndex + 1) + " về nhất.");
+            tvResult.setText("Bạn thắng! +" + betManager.formatInt(profit) + ". Vịt " + (winnerIndex + 1) + " về nhất.");
         } else {
             tvResult.setText("Bạn thua cược. Vịt " + (winnerIndex + 1) + " về nhất.");
         }
         updateBalanceText();
+    }
+
+    // Câu châm chọc theo mức cược
+    private String getBetTaunt(int amount) {
+        if (amount == 100) return "Cược ít thế!";
+        if (amount == 1000) return "Thần tài đến, thần tài đến!";
+        return "Chắc cốp dị cha!";
     }
 }
