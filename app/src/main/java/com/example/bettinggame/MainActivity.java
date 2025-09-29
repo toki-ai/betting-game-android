@@ -7,8 +7,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.SeekBar;
 import android.widget.Toast;
@@ -48,8 +46,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean raceRunning = false; // prevents multiple starts
 
     // Betting UI
-    private RadioGroup rgDucks;
-    private EditText etBetAmount;
+    private EditText etBet1, etBet2, etBet3, etBet4;
     private TextView tvBalance, tvResult;
     private View betPanel;
     private int selectedDuckIndex = 0; // 0..3
@@ -88,33 +85,55 @@ public class MainActivity extends AppCompatActivity {
         btnStart.setOnClickListener(v -> startRace());
 
         // Ánh xạ view đặt cược
-        rgDucks = findViewById(R.id.rgDucks);
-        etBetAmount = findViewById(R.id.etBetAmount);
         tvBalance = findViewById(R.id.tvBalance);
         tvResult = findViewById(R.id.tvResult);
         betPanel = findViewById(R.id.betPanel);
+        etBet1 = findViewById(R.id.etBet1);
+        etBet2 = findViewById(R.id.etBet2);
+        etBet3 = findViewById(R.id.etBet3);
+        etBet4 = findViewById(R.id.etBet4);
 
         // Cập nhật text số dư ban đầu
         updateBalanceText();
 
-        // Lắng nghe radio để biết vịt được chọn
-        rgDucks.setOnCheckedChangeListener((group, checkedId) -> {
-            if (checkedId == R.id.rbDuck1) selectedDuckIndex = 0;
-            else if (checkedId == R.id.rbDuck2) selectedDuckIndex = 1;
-            else if (checkedId == R.id.rbDuck3) selectedDuckIndex = 2;
-            else if (checkedId == R.id.rbDuck4) selectedDuckIndex = 3;
-        });
+        // Không còn radio chọn vịt; xác định qua ô nhập tiền của từng lane
     }
 
     private void startRace() {
         // Nếu đang chạy thì không làm gì
         if (raceRunning) return;
 
+        // Xác định vịt được chọn: ưu tiên dòng có tiền nhập > 0, đồng thời chỉ cho phép 1 dòng hợp lệ
+        int[] bets = new int[]{
+                betManager.parseAmount(etBet1 != null && etBet1.getText()!=null ? etBet1.getText().toString() : ""),
+                betManager.parseAmount(etBet2 != null && etBet2.getText()!=null ? etBet2.getText().toString() : ""),
+                betManager.parseAmount(etBet3 != null && etBet3.getText()!=null ? etBet3.getText().toString() : ""),
+                betManager.parseAmount(etBet4 != null && etBet4.getText()!=null ? etBet4.getText().toString() : "")
+        };
+
+        int activeCount = 0;
+        int betAmount = 0;
+        int chosenIndex = -1;
+        for (int i = 0; i < bets.length; i++) {
+            if (bets[i] > 0) {
+                activeCount++;
+                betAmount = bets[i];
+                chosenIndex = i;
+            }
+        }
+        if (activeCount == 0) {
+            Toast.makeText(this, "Nhập tiền cược tại đúng 1 con vịt", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (activeCount > 1) {
+            Toast.makeText(this, "Chỉ được đặt cho 1 con vịt mỗi vòng", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        selectedDuckIndex = chosenIndex;
         // Lấy tiền cược và kiểm tra hợp lệ trước khi bắt đầu đua
-        int betAmount = betManager.parseAmount(etBetAmount.getText() != null ? etBetAmount.getText().toString() : "");
         BetManager.ValidationResult vr = betManager.validateBet(betAmount);
         if (!vr.valid) {
-            if (etBetAmount != null) etBetAmount.setError(vr.message);
+            setErrorOnChosenBetField(chosenIndex, vr.message);
             Toast.makeText(this, vr.message != null ? vr.message : "Tiền cược không hợp lệ", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -132,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
         raceRunning = true;
         btnStart.setEnabled(false);
         btnStart.setText("Đang đua...");
-        setBettingControlsEnabled(false);
+        setPerDuckInputsEnabled(false);
 
         // remove previous callbacks (reset)
         handler.removeCallbacksAndMessages(null);
@@ -162,6 +181,9 @@ public class MainActivity extends AppCompatActivity {
             finishLineMoving = true;
             bgHandler.post(finishRunnable);
         });
+
+        // Chốt tiền cược cho vòng này để dùng trong inner class (phải là final/effectively final)
+        final int betForRace = betAmount;
 
         // start each animal's progress + sprite
         for (int i = 0; i < animals.length; i++) {
@@ -201,7 +223,7 @@ public class MainActivity extends AppCompatActivity {
                             stopAllRunnables();
                             announceWinner(index);
                             // Tính payout đơn giản: nếu chọn đúng -> nhận 2x tiền cược, sai -> mất cược
-                            handlePayout(index, betAmount);
+                            handlePayout(index, betForRace);
                         }
                     }
                 }
@@ -263,10 +285,10 @@ public class MainActivity extends AppCompatActivity {
             btnStart.setEnabled(true);
             btnStart.setText("Bắt đầu đua");
             // Mở lại control đặt cược
-            setBettingControlsEnabled(true);
+            setPerDuckInputsEnabled(true);
             // Hiện lại panel đặt cược và xoá tiền cược cũ để vòng mới rõ ràng
             if (betPanel != null) betPanel.setVisibility(View.VISIBLE);
-            if (etBetAmount != null) etBetAmount.setText("");
+            clearPerDuckInputs();
         });
     }
 
@@ -287,12 +309,27 @@ public class MainActivity extends AppCompatActivity {
 
     // parseBetAmount -> đã chuyển sang BetManager
 
-    private void setBettingControlsEnabled(boolean enabled) {
-        for (int i = 0; i < rgDucks.getChildCount(); i++) {
-            View child = rgDucks.getChildAt(i);
-            child.setEnabled(enabled);
-        }
-        etBetAmount.setEnabled(enabled);
+    private void setPerDuckInputsEnabled(boolean enabled) {
+        if (etBet1 != null) etBet1.setEnabled(enabled);
+        if (etBet2 != null) etBet2.setEnabled(enabled);
+        if (etBet3 != null) etBet3.setEnabled(enabled);
+        if (etBet4 != null) etBet4.setEnabled(enabled);
+    }
+
+    private void clearPerDuckInputs() {
+        if (etBet1 != null) etBet1.setText("");
+        if (etBet2 != null) etBet2.setText("");
+        if (etBet3 != null) etBet3.setText("");
+        if (etBet4 != null) etBet4.setText("");
+    }
+
+    private void setErrorOnChosenBetField(int index, String message) {
+        EditText target = null;
+        if (index == 0) target = etBet1;
+        else if (index == 1) target = etBet2;
+        else if (index == 2) target = etBet3;
+        else if (index == 3) target = etBet4;
+        if (target != null) target.setError(message);
     }
 
     private void handlePayout(int winnerIndex, int betAmount) {

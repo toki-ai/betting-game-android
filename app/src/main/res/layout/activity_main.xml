@@ -35,7 +35,7 @@
         android:layout_height="match_parent"
         android:padding="16dp">
 
-        <!-- Panel đặt cược: chọn vịt, nhập tiền cược, hiển thị số dư & kết quả -->
+        <!-- Panel đặt cược: hiển thị số dư & kết quả (đặt tiền trực tiếp tại từng lane) -->
         <LinearLayout
             android:id="@+id/betPanel"
             android:layout_width="match_parent"
@@ -54,59 +54,7 @@
                 android:textStyle="bold"
                 android:textSize="16sp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Chọn vịt muốn cược:"/>
-
-            <RadioGroup
-                android:id="@+id/rgDucks"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <RadioButton
-                    android:id="@+id/rbDuck1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Vịt 1"
-                    android:checked="true"/>
-                <RadioButton
-                    android:id="@+id/rbDuck2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Vịt 2"/>
-                <RadioButton
-                    android:id="@+id/rbDuck3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Vịt 3"/>
-                <RadioButton
-                    android:id="@+id/rbDuck4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Vịt 4"/>
-            </RadioGroup>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Tiền cược:"/>
-
-                <EditText
-                    android:id="@+id/etBetAmount"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:inputType="number"
-                    android:hint="Nhập số tiền"/>
-            </LinearLayout>
+            <!-- Bỏ chọn vịt và ô nhập chung; mỗi lane sẽ có ô nhập riêng -->
 
             <TextView
                 android:id="@+id/tvResult"
@@ -144,6 +92,17 @@
                 android:layout_height="72dp"
                 android:layout_gravity="center_vertical"
                 android:src="@drawable/animal1_idle"/>
+
+            <EditText
+                android:id="@+id/etBet1"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|start"
+                android:layout_margin="8dp"
+                android:hint="Bet"
+                android:inputType="number"
+                android:padding="8dp"
+                android:background="#CCFFFFFF"/>
         </FrameLayout>
 
         <!-- lane 2 -->
@@ -166,6 +125,17 @@
                 android:layout_height="72dp"
                 android:layout_gravity="center_vertical"
                 android:src="@drawable/animal2_idle"/>
+
+            <EditText
+                android:id="@+id/etBet2"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|start"
+                android:layout_margin="8dp"
+                android:hint="Bet"
+                android:inputType="number"
+                android:padding="8dp"
+                android:background="#CCFFFFFF"/>
         </FrameLayout>
 
         <!-- lane 3 -->
@@ -188,6 +158,17 @@
                 android:layout_height="72dp"
                 android:layout_gravity="center_vertical"
                 android:src="@drawable/animal3_idle"/>
+
+            <EditText
+                android:id="@+id/etBet3"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|start"
+                android:layout_margin="8dp"
+                android:hint="Bet"
+                android:inputType="number"
+                android:padding="8dp"
+                android:background="#CCFFFFFF"/>
         </FrameLayout>
 
         <!-- lane 4 -->
@@ -210,6 +191,17 @@
                 android:layout_height="72dp"
                 android:layout_gravity="center_vertical"
                 android:src="@drawable/animal4_idle"/>
+
+            <EditText
+                android:id="@+id/etBet4"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|start"
+                android:layout_margin="8dp"
+                android:hint="Bet"
+                android:inputType="number"
+                android:padding="8dp"
+                android:background="#CCFFFFFF"/>
         </FrameLayout>
 
     </LinearLayout>
