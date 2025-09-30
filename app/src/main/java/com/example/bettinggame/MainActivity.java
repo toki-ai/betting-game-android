@@ -1,5 +1,7 @@
 package com.example.bettinggame;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -28,6 +30,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+
+        String username = getIntent().getStringExtra("username");
+
+        SharedPreferences prefs = getSharedPreferences("BettingGamePrefs", Context.MODE_PRIVATE);
+        int coin = prefs.getInt(username, 0);
 
         seekBars = new SeekBar[]{
                 findViewById(R.id.seekBar1),
