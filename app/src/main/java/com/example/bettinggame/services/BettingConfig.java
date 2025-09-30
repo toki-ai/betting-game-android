@@ -1,4 +1,4 @@
-package com.example.bettinggame.bet;
+package com.example.bettinggame.services;
 
 import java.text.NumberFormat;
 import java.util.Locale;

@@ -3,9 +3,6 @@ package com.example.bettinggame;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
@@ -21,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.bettinggame.bet.BetManager;
 import java.util.Random;
 import pl.droidsonroids.gif.GifDrawable;
+import pl.droidsonroids.gif.GifImageView;
 import java.io.IOException;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
@@ -33,12 +31,21 @@ public class MainActivity extends AppCompatActivity {
     private Handler handler = new Handler();
     private boolean raceFinished = false;
 
-    // Background
-    private ImageView bg1, bg2;
+    // Grass background (GIF)
+    private GifImageView grass1, grass2;
+    private Handler grassHandler = new Handler();
+    private int grassSpeed = 5;
+    private boolean grassRunning = false;
+    private int grassWidth = 0;
+
+    // Water background (PNG)
+    private ImageView water1, water2;
+    private Handler waterHandler = new Handler();
+    private int waterSpeed = 5;
+    private boolean waterRunning = false;
+    private int waterWidth = 0;
+
     private View finishLine;
-    private Handler bgHandler = new Handler();
-    private int bgSpeed = 5;
-    private boolean bgRunning = false;
 
     // Finish line movement
     private boolean finishLineMoving = false;
@@ -62,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
     // Animation
     private ObjectAnimator[] duckAnimators = new ObjectAnimator[4];
     private long raceStartTime = 0;
-    
+
     // GIF thumbs
     private GifDrawable[] gifThumbs = new GifDrawable[4];
 
@@ -83,8 +90,14 @@ public class MainActivity extends AppCompatActivity {
                 findViewById(R.id.seekBar4)
         };
 
-        bg1 = findViewById(R.id.bg1);
-        bg2 = findViewById(R.id.bg2);
+        // Setup Grass background
+        grass1 = findViewById(R.id.grass1);
+        grass2 = findViewById(R.id.grass2);
+
+        // Setup Water background
+        water1 = findViewById(R.id.waterBg1);
+        water2 = findViewById(R.id.waterBg2);
+
         finishLine = findViewById(R.id.finishLine);
 
         DisplayMetrics metrics = getResources().getDisplayMetrics();
@@ -131,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
                 gifThumbs[i] = new GifDrawable(getResources(), R.drawable.animal);
                 gifThumbs[i].setBounds(0, 0, thumbSize, thumbSize);
                 seekBars[i].setThumb(gifThumbs[i]);
-                gifThumbs[i].start(); // Bắt đầu animation GIF
+                gifThumbs[i].start();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -172,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
         // Tăng tốc GIF khi đua
         for (GifDrawable gif : gifThumbs) {
             if (gif != null) {
-                gif.setSpeed(2.0f); // Chạy nhanh gấp đôi
+                gif.setSpeed(2.0f);
             }
         }
 
@@ -184,7 +197,8 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         handler.removeCallbacksAndMessages(null);
-        bgHandler.removeCallbacksAndMessages(null);
+        grassHandler.removeCallbacksAndMessages(null);
+        waterHandler.removeCallbacksAndMessages(null);
         raceFinished = false;
         raceStartTime = System.currentTimeMillis();
 
@@ -194,12 +208,27 @@ public class MainActivity extends AppCompatActivity {
         finishLine.post(() -> {
             targetFinishX = seekBars[0].getX() + seekBars[0].getWidth();
             finishLine.setX(initialFinishX);
-            bg1.setX(0);
-            bg2.setX(bg1.getWidth());
-            bgRunning = true;
-            bgHandler.post(bgRunnable);
+
+            // Khởi tạo Grass background
+            grass1.post(() -> {
+                grassWidth = grass1.getWidth();
+                grass1.setX(0);
+                grass2.setX(grassWidth);
+                grassRunning = true;
+                grassHandler.post(grassRunnable);
+            });
+
+            // Khởi tạo Water background
+            water1.post(() -> {
+                waterWidth = water1.getWidth();
+                water1.setX(0);
+                water2.setX(waterWidth);
+                waterRunning = true;
+                waterHandler.post(waterRunnable);
+            });
+
             finishLineMoving = true;
-            bgHandler.post(finishRunnable);
+            waterHandler.post(finishRunnable);
         });
 
         final int betForRace = betAmount;
@@ -207,47 +236,42 @@ public class MainActivity extends AppCompatActivity {
 
         final int SMOOTH_MAX = 10000;
         int[] winnerIndex = {-1};
-        
+
         for (int i = 0; i < seekBars.length; i++) {
             final int index = i;
             seekBars[index].setMax(SMOOTH_MAX);
             seekBars[index].setProgress(0);
-            
-            // Tốc độ ngẫu nhiên - thời gian hoàn thành
-            final float baseSpeed = (new Random().nextFloat() * 0.5f + 0.5f);
-            final long totalDuration = (long)(8000 + baseSpeed * 4000); // 8-12 giây
 
-            // Dùng ObjectAnimator - MƯỢT TUYỆT ĐỐI
+            final float baseSpeed = (new Random().nextFloat() * 0.5f + 0.5f);
+            final long totalDuration = (long)(10000 + baseSpeed * 5000);
+
             ObjectAnimator animator = ObjectAnimator.ofInt(seekBars[index], "progress", 0, SMOOTH_MAX);
             animator.setDuration(totalDuration);
             animator.setInterpolator(new LinearInterpolator());
-            
+
             animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 private boolean hasFinished = false;
-                
+
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
                     if (raceFinished || hasFinished) return;
-                    
+
                     int currentValue = (int) animation.getAnimatedValue();
-                    
-                    // Kiểm tra về đích
+
                     if (currentValue >= SMOOTH_MAX && !hasFinished) {
                         hasFinished = true;
                         if (!raceFinished) {
                             raceFinished = true;
                             winnerIndex[0] = index;
-                            
-                            // Dừng tất cả animation
+
                             handler.postDelayed(() -> {
                                 for (ObjectAnimator anim : duckAnimators) {
                                     if (anim != null) anim.cancel();
                                 }
-                                
-                                // Reset seekbar
+
                                 seekBars[index].setMax(100);
                                 seekBars[index].setProgress(100);
-                                
+
                                 handlePayout(index, betForRace, chosenDuckAtStart);
                                 stopAllRunnables();
                                 announceWinner(index);
@@ -256,25 +280,47 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             });
-            
+
             duckAnimators[index] = animator;
             animator.start();
         }
     }
 
-    private final Runnable bgRunnable = new Runnable() {
+    // Runnable cho Grass background
+    private final Runnable grassRunnable = new Runnable() {
         @Override
         public void run() {
-            if (!bgRunning) return;
-            bg1.setX(bg1.getX() - bgSpeed);
-            bg2.setX(bg2.getX() - bgSpeed);
-            if (bg1.getX() + bg1.getWidth() <= 0) {
-                bg1.setX(bg2.getX() + bg2.getWidth());
+            if (!grassRunning || grassWidth == 0) return;
+
+            grass1.setX(grass1.getX() - grassSpeed);
+            grass2.setX(grass2.getX() - grassSpeed);
+
+            if (grass1.getX() + grassWidth <= 0) {
+                grass1.setX(grass2.getX() + grassWidth);
             }
-            if (bg2.getX() + bg2.getWidth() <= 0) {
-                bg2.setX(bg1.getX() + bg1.getWidth());
+            if (grass2.getX() + grassWidth <= 0) {
+                grass2.setX(grass1.getX() + grassWidth);
             }
-            bgHandler.postDelayed(this, 16);
+            grassHandler.postDelayed(this, 16);
+        }
+    };
+
+    // Runnable cho Water background
+    private final Runnable waterRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (!waterRunning || waterWidth == 0) return;
+
+            water1.setX(water1.getX() - waterSpeed);
+            water2.setX(water2.getX() - waterSpeed);
+
+            if (water1.getX() + waterWidth <= 0) {
+                water1.setX(water2.getX() + waterWidth);
+            }
+            if (water2.getX() + waterWidth <= 0) {
+                water2.setX(water1.getX() + waterWidth);
+            }
+            waterHandler.postDelayed(this, 16);
         }
     };
 
@@ -289,7 +335,7 @@ public class MainActivity extends AppCompatActivity {
                 finishLineMoving = false;
             } else {
                 finishLine.setX(nextX);
-                bgHandler.postDelayed(this, 16);
+                waterHandler.postDelayed(this, 16);
             }
         }
     };
@@ -309,12 +355,14 @@ public class MainActivity extends AppCompatActivity {
                 duckAnimators[i] = null;
             }
         }
-        
+
         handler.removeCallbacksAndMessages(null);
-        bgHandler.removeCallbacksAndMessages(null);
-        bgRunning = false;
+        grassHandler.removeCallbacksAndMessages(null);
+        waterHandler.removeCallbacksAndMessages(null);
+        grassRunning = false;
+        waterRunning = false;
         finishLineMoving = false;
-        
+
         runOnUiThread(() -> {
             raceRunning = false;
             btnStart.setEnabled(true);
