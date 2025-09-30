@@ -17,10 +17,20 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".RaceResultsActivity"
+            android:label="Bảng Xếp Hạng" 
+            android:configChanges="orientation|screenSize"/>
+            
+        <activity
+            android:name=".TutorialActivity"
+            android:label="Hướng dẫn chơi" 
+            android:configChanges="orientation|screenSize"/>
+            
     </application>
 
 </manifest>

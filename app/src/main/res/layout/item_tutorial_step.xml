@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="16dp">
+
+    <ImageView
+        android:id="@+id/imageViewTutorial"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="200dp" 
+        android:minHeight="200dp"
+        android:layout_marginBottom="16dp"
+        tools:srcCompat="@drawable/placeholder_image_1" /> <!-- Ví dụ ảnh placeholder -->
+
+    <TextView
+        android:id="@+id/textViewTutorialDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:textSize="18sp"
+        android:textColor="@android:color/black"
+        tools:text="Đây là nội dung hướng dẫn cho bước này. Giải thích cách chơi game một cách chi tiết và dễ hiểu." />
+
+</LinearLayout>
