@@ -1,282 +1,443 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingTop="8dp">
+    android:layout_height="match_parent">
 
-    <!-- Background chạy loop -->
-    <ImageView
-        android:id="@+id/bg1"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop"
-        android:src="@drawable/background"/>
+    <FrameLayout
+        android:id="@+id/grassContainer"
+        android:layout_width="0dp"
+        android:layout_height="150dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <ImageView
-        android:id="@+id/bg2"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop"
-        android:src="@drawable/background"/>
+        <pl.droidsonroids.gif.GifImageView
+            android:id="@+id/grass1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/grass" />
 
-    <!-- Vạch đích (sẽ được di chuyển từ ngoài màn hình vào và dừng tại target) -->
-    <View
-        android:id="@+id/finishLine"
-        android:layout_width="32dp"
-        android:layout_height="match_parent"
-        android:layout_gravity="end"
-        android:background="@drawable/finish_line"
-        android:visibility="gone" />
+        <pl.droidsonroids.gif.GifImageView
+            android:id="@+id/grass2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/grass" />
+    </FrameLayout>
 
-    <!-- Foreground: Không dùng ScrollView, chia đều 4 lane theo trọng số để luôn thấy đủ -->
-    <LinearLayout
+    <!-- Panel đặt cược -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/betPanel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="12dp">
+        android:padding="8dp"
+        android:background="#80FFFFFF"
+        android:elevation="2dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="30dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:id="@+id/profileContainer"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_horizontal">
-
-        <!-- Panel đặt cược: hiển thị số dư & kết quả (đặt tiền trực tiếp tại từng lane) -->
-        <LinearLayout
-            android:id="@+id/betPanel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             android:orientation="vertical"
-            android:padding="8dp"
-            android:background="#80FFFFFF"
-            android:elevation="2dp"
-            android:layout_marginBottom="8dp">
+            android:paddingRight="30dp">
 
             <TextView
-                android:id="@+id/tvBalance"
+                android:id="@+id/tvUsername"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Balance: 1000"
+                android:text="Player: User1"
                 android:textStyle="bold"
                 android:textSize="14sp" />
 
-            <!-- Bỏ chọn vịt và ô nhập chung; mỗi lane sẽ có ô nhập riêng -->
-
-            <TextView
-                android:id="@+id/tvResult"
+            <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=""
-                android:textStyle="italic"
-                android:textSize="12sp"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:layout_marginTop="4dp"
-                android:visibility="gone"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="8dp">
-                <Button
-                    android:id="@+id/btnStart"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Bắt đầu đua" />
-            <Button
-                android:id="@+id/btnCancelBet"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/tvBalance"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                android:text="Hủy cược"
-                android:layout_marginStart="8dp"/>
+                    android:text="Balance: 1000"
+                    android:textStyle="bold"
+                    android:layout_marginTop="10dp"
+                    android:textSize="14sp" />
+
+                <ImageButton
+                    android:id="@+id/btnDeposit"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="10dp"
+                    android:src="@drawable/ic_deposit"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Deposit"
+                    android:scaleType="centerCrop" />
+
+            </LinearLayout>
+
         </LinearLayout>
 
-            <Button
-                android:id="@+id/btnTutorial"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="Hướng Dẫn" />
+        <Button
+            android:id="@+id/btnStart"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Bắt đầu đua"
+            app:layout_constraintTop_toTopOf="@id/profileContainer"
+            app:layout_constraintBottom_toBottomOf="@id/profileContainer"
+            app:layout_constraintStart_toEndOf="@id/profileContainer"
+            app:layout_constraintHorizontal_weight="1" />
+
+        <ImageButton
+            android:id="@+id/btnLogOut"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_logout"
+            android:layout_marginEnd="12dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="LogOut"
+            android:scaleType="centerCrop"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="7sp"
+            android:text="Đăng xuất"
+            app:layout_constraintTop_toBottomOf="@+id/btnLogOut"
+            app:layout_constraintStart_toStartOf="@+id/btnLogOut"/>
+
+        <ImageButton
+            android:id="@+id/btnTutorial"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_book"
+            android:layout_marginEnd="24dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Tutorial"
+            app:layout_constraintTop_toTopOf="@+id/btnLogOut"
+            android:scaleType="centerCrop"
+            app:layout_constraintEnd_toStartOf="@+id/btnLogOut" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="7sp"
+            android:text="Hướng dẫn"
+            app:layout_constraintTop_toBottomOf="@+id/btnTutorial"
+            app:layout_constraintStart_toStartOf="@+id/btnTutorial"/>
+
+        <ImageButton
+            android:id="@+id/btnMusic"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_music"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Music"
+            android:layout_marginEnd="24dp"
+            app:layout_constraintTop_toTopOf="@+id/btnTutorial"
+            android:scaleType="centerCrop"
+            app:layout_constraintEnd_toStartOf="@+id/btnTutorial"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <TextView
+            android:id="@+id/tvMusic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="7sp"
+            android:text="Nhạc nền"
+            app:layout_constraintTop_toBottomOf="@+id/btnMusic"
+            app:layout_constraintStart_toStartOf="@+id/btnMusic"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <FrameLayout
+        android:id="@+id/waterContainer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/grassContainer"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:ignore="DuplicateIds">
+
+        <!-- Background water -->
+        <ImageView
+            android:id="@+id/waterBg1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/water" />
+
+        <ImageView
+            android:id="@+id/waterBg2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/water" />
+
+        <!-- 4 lane chia đều -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <!-- Lane 1 -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+
+                <SeekBar
+                    android:id="@+id/seekBar1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:max="100"
+                    android:paddingBottom="20dp"
+                    android:layout_marginLeft="120dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:progressDrawable="@drawable/blur_seekbar" />
+
+                <Button
+                    android:id="@+id/btnBet1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|start"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_marginLeft="20dp"
+                    android:text="Đặt" />
+
+                <TextView
+                    android:id="@+id/tvBet1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|start"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:background="#66000000"
+                    android:textColor="#FFFFFF"
+                    android:padding="6dp"
+                    android:layout_marginLeft="20dp"
+                    android:text="0"
+                    android:visibility="gone" />
+
+                <ImageButton
+                    android:id="@+id/btnCancelBet1"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_cancel"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Cancel Bet 1"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone"
+                    app:layout_constraintStart_toEndOf="@id/tvBet1"
+                    app:layout_constraintTop_toTopOf="@id/tvBet1"
+                    app:layout_constraintBottom_toBottomOf="@id/tvBet1"
+                    android:layout_marginStart="4dp" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- Lane 2 -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+
+                <SeekBar
+                    android:id="@+id/seekBar2"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:max="100"
+                    android:paddingBottom="20dp"
+                    android:layout_marginLeft="120dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:progressDrawable="@drawable/blur_seekbar" />
+
+                <Button
+                    android:id="@+id/btnBet2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|start"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_marginLeft="20dp"
+                    android:text="Đặt" />
+
+                <TextView
+                    android:id="@+id/tvBet2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|start"
+                    android:layout_marginLeft="20dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:background="#66000000"
+                    android:textColor="#FFFFFF"
+                    android:padding="6dp"
+                    android:text="0"
+                    android:visibility="gone" />
+
+                <ImageButton
+                    android:id="@+id/btnCancelBet2"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_cancel"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Cancel Bet 2"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone"
+                    app:layout_constraintStart_toEndOf="@id/tvBet2"
+                    app:layout_constraintTop_toTopOf="@id/tvBet2"
+                    app:layout_constraintBottom_toBottomOf="@id/tvBet2"
+                    android:layout_marginStart="4dp" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- Lane 3 -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+
+                <SeekBar
+                    android:id="@+id/seekBar3"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:max="100"
+                    android:paddingBottom="20dp"
+                    android:layout_marginLeft="120dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:progressDrawable="@drawable/blur_seekbar" />
+
+                <Button
+                    android:id="@+id/btnBet3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|start"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_marginLeft="20dp"
+                    android:text="Đặt" />
+
+                <TextView
+                    android:id="@+id/tvBet3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|start"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:background="#66000000"
+                    android:textColor="#FFFFFF"
+                    android:padding="6dp"
+                    android:layout_marginLeft="20dp"
+                    android:text="0"
+                    android:visibility="gone" />
+
+                <ImageButton
+                    android:id="@+id/btnCancelBet3"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_cancel"
+                    android:scaleType="centerCrop"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Cancel Bet 3"
+                    android:visibility="gone"
+                    app:layout_constraintStart_toEndOf="@id/tvBet3"
+                    app:layout_constraintTop_toTopOf="@id/tvBet3"
+                    app:layout_constraintBottom_toBottomOf="@id/tvBet3"
+                    android:layout_marginStart="4dp" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- Lane 4 -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+
+                <SeekBar
+                    android:id="@+id/seekBar4"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:max="100"
+                    android:paddingBottom="20dp"
+                    android:layout_marginLeft="120dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:progressDrawable="@drawable/blur_seekbar" />
+
+                <Button
+                    android:id="@+id/btnBet4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|start"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_marginLeft="20dp"
+                    android:text="Đặt" />
+
+                <TextView
+                    android:id="@+id/tvBet4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|start"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:background="#66000000"
+                    android:textColor="#FFFFFF"
+                    android:padding="6dp"
+                    android:layout_marginLeft="20dp"
+                    android:text="0"
+                    android:visibility="gone" />
+
+                <ImageButton
+                    android:id="@+id/btnCancelBet4"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_cancel"
+                    android:scaleType="centerCrop"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Cancel Bet 4"
+                    android:visibility="gone"
+                    app:layout_constraintStart_toEndOf="@id/tvBet4"
+                    app:layout_constraintTop_toTopOf="@id/tvBet4"
+                    app:layout_constraintBottom_toBottomOf="@id/tvBet4"
+                    android:layout_marginStart="4dp" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
+    </FrameLayout>
 
-        <!-- lane 1 -->
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:layout_marginTop="16dp" 
-            android:layout_marginBottom="8dp">
+    <!-- Vạch đích -->
+    <View
+        android:id="@+id/finishLine"
+        android:layout_width="32dp"
+        android:layout_height="0dp"
+        android:background="@drawable/finish_line"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/grassContainer"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-            <SeekBar
-                android:id="@+id/seekBar1"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:progressDrawable="@drawable/blur_seekbar"
-                android:thumb="@android:color/transparent"
-                android:max="100"/>
-
-            <ImageView
-                android:id="@+id/animal1"
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                android:layout_gravity="center_vertical"
-                android:src="@drawable/animal1_idle"/>
-
-            <Button
-                android:id="@+id/btnBet1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|start"
-                android:layout_margin="8dp"
-                android:text="Đặt"/>
-
-            <TextView
-                android:id="@+id/tvBet1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical|start"
-                android:layout_marginStart="8dp"
-                android:background="#66000000"
-                android:textColor="#FFFFFF"
-                android:padding="6dp"
-                android:text="0"
-                android:visibility="gone"/>
-        </FrameLayout>
-
-        <!-- lane 2 -->
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:layout_marginBottom="8dp">
-
-            <SeekBar
-                android:id="@+id/seekBar2"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:progressDrawable="@drawable/blur_seekbar"
-                android:thumb="@android:color/transparent"
-                android:max="100"/>
-
-            <ImageView
-                android:id="@+id/animal2"
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                android:layout_gravity="center_vertical"
-                android:src="@drawable/animal2_idle"/>
-
-            <Button
-                android:id="@+id/btnBet2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|start"
-                android:layout_margin="8dp"
-                android:text="Đặt"/>
-
-            <TextView
-                android:id="@+id/tvBet2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical|start"
-                android:layout_marginStart="8dp"
-                android:background="#66000000"
-                android:textColor="#FFFFFF"
-                android:padding="6dp"
-                android:text="0"
-                android:visibility="gone"/>
-        </FrameLayout>
-
-        <!-- lane 3 -->
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:layout_marginBottom="8dp">
-
-            <SeekBar
-                android:id="@+id/seekBar3"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:progressDrawable="@drawable/blur_seekbar"
-                android:thumb="@android:color/transparent"
-                android:max="100"/>
-
-            <ImageView
-                android:id="@+id/animal3"
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                android:layout_gravity="center_vertical"
-                android:src="@drawable/animal3_idle"/>
-
-            <Button
-                android:id="@+id/btnBet3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|start"
-                android:layout_margin="8dp"
-                android:text="Đặt"/>
-
-            <TextView
-                android:id="@+id/tvBet3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical|start"
-                android:layout_marginStart="8dp"
-                android:background="#66000000"
-                android:textColor="#FFFFFF"
-                android:padding="6dp"
-                android:text="0"
-                android:visibility="gone"/>
-        </FrameLayout>
-
-        <!-- lane 4 -->
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:layout_marginBottom="0dp">
-
-            <SeekBar
-                android:id="@+id/seekBar4"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:progressDrawable="@drawable/blur_seekbar"
-                android:thumb="@android:color/transparent"
-                android:max="100"/>
-
-            <ImageView
-                android:id="@+id/animal4"
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                android:layout_gravity="center_vertical"
-                android:src="@drawable/animal4_idle"/>
-
-            <Button
-                android:id="@+id/btnBet4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|start"
-                android:layout_margin="8dp"
-                android:text="Đặt"/>
-
-            <TextView
-                android:id="@+id/tvBet4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical|start"
-                android:layout_marginStart="8dp"
-                android:background="#66000000"
-                android:textColor="#FFFFFF"
-                android:padding="6dp"
-                android:text="0"
-                android:visibility="gone"/>
-        </FrameLayout>
-
-    </LinearLayout>
-</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

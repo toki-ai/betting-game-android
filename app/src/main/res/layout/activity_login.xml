@@ -6,34 +6,75 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
+    android:background="#E8F5FF"
     tools:context=".LoginActivity">
 
-    <!-- Ô nhập Username -->
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:src="@drawable/login_bg"
+        android:layout_marginLeft="100dp"
+        android:scaleType="centerCrop"
+        android:clipToOutline="true"
+        android:background="@drawable/round_bg"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
     <EditText
         android:id="@+id/etUsername"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="Enter Username"
+        android:hint="Nhập nickname của bạn"
         android:padding="12dp"
-        android:background="@android:drawable/edit_text"
         android:inputType="textPersonName"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/btnLogin"
+        app:layout_constraintStart_toEndOf="@+id/imageView"
+        android:layout_marginLeft="30dp"
+        android:background="@drawable/round_bg"
+        android:backgroundTint="#ffffff"
+        android:layout_marginEnd="100dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginBottom="80dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_weight="2"
-        android:layout_margin="16dp"/>
+        app:layout_constraintHorizontal_weight="2" />
 
-    <!-- Nút Login -->
     <Button
         android:id="@+id/btnLogin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Login"
-        app:layout_constraintStart_toEndOf="@id/etUsername"
+        android:text="Đăng nhập"
+        android:backgroundTint="#2196F3"
+        android:layout_marginTop="20dp"
+        app:layout_constraintStart_toStartOf="@id/etUsername"
+        app:layout_constraintEnd_toEndOf="@id/etUsername"
+        app:layout_constraintTop_toBottomOf="@+id/etUsername"
+        />
+
+    <ImageButton
+        android:id="@+id/btnMusic"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_music"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="24dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Tutorial"
+        android:scaleType="centerCrop"
+        android:soundEffectsEnabled="false"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_margin="16dp"/>
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/tvMusic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="7sp"
+        android:text="Bật nhạc"
+        app:layout_constraintTop_toBottomOf="@+id/btnMusic"
+        app:layout_constraintStart_toStartOf="@+id/btnMusic"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

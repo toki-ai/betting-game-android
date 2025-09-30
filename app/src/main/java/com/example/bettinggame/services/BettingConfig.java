@@ -1,21 +1,18 @@
-package com.example.bettinggame.bet;
+package com.example.bettinggame.services;
 
+
+import com.example.bettinggame.Constants;
 import java.text.NumberFormat;
 import java.util.Locale;
 
-/**
- * Quản lý logic đặt cược: parse, validate, format, settle payout.
- * Giữ class này không phụ thuộc UI để dễ test.
- */
-public class BetManager {
+public class BettingConfig {
 
-    public static final int MIN_BET = 100;
 
     private final NumberFormat intFormatter = NumberFormat.getIntegerInstance(Locale.getDefault());
 
     private int balance;
 
-    public BetManager(int initialBalance) {
+    public BettingConfig(int initialBalance) {
         this.balance = Math.max(0, initialBalance);
     }
 
@@ -42,8 +39,8 @@ public class BetManager {
     }
 
     public ValidationResult validateBet(int amount) {
-        if (amount < MIN_BET) {
-            return ValidationResult.error("Tối thiểu " + MIN_BET);
+    if (amount < Constants.MIN_BET) {
+            return ValidationResult.error("Tối thiểu " + Constants.MIN_BET);
         }
         if (amount > balance) {
             return ValidationResult.error("Vượt số dư hiện có");

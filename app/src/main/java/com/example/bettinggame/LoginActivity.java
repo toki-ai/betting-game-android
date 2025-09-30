@@ -6,15 +6,21 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.bettinggame.services.MusicManager;
+
 public class LoginActivity extends AppCompatActivity {
 
     private EditText etUsername;
     private Button btnLogin;
+    private ImageButton btnMusic;
+    private TextView tvMusic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +30,18 @@ public class LoginActivity extends AppCompatActivity {
 
         etUsername = findViewById(R.id.etUsername);
         btnLogin = findViewById(R.id.btnLogin);
+        btnMusic = findViewById(R.id.btnMusic);
+        tvMusic = findViewById(R.id.tvMusic);
+
+        btnMusic.setOnClickListener(v -> {
+            if (!MusicManager.isPlaying()) {
+                MusicManager.startMusic(this);
+                tvMusic.setText("Tắt Nhạc 🎵");
+            } else {
+                MusicManager.stopMusic();
+                tvMusic.setText("Bật Nhạc 🎶");
+            }
+        });
 
         btnLogin.setOnClickListener(v -> {
             String username = etUsername.getText().toString().trim();
@@ -39,7 +57,7 @@ public class LoginActivity extends AppCompatActivity {
                 coin = prefs.getInt(username, 0);
                 Toast.makeText(this, "Welcome back " + username + " (Coins: " + coin + ")", Toast.LENGTH_SHORT).show();
             } else {
-                coin = 500;
+                coin = Constants.DEFAULT_BALANCE;
                 prefs.edit().putInt(username, coin).apply();
                 Toast.makeText(this, "New user created: " + username + " (Coins: " + coin + ")", Toast.LENGTH_SHORT).show();
             }
