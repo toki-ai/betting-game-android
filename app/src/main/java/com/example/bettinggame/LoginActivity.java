@@ -7,16 +7,20 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.bettinggame.services.MusicManager;
+
 public class LoginActivity extends AppCompatActivity {
 
     private EditText etUsername;
     private Button btnLogin;
-    private ImageButton btnTutorial, btnMusic;
+    private ImageButton btnMusic;
+    private TextView tvMusic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,14 +30,17 @@ public class LoginActivity extends AppCompatActivity {
 
         etUsername = findViewById(R.id.etUsername);
         btnLogin = findViewById(R.id.btnLogin);
-
-        btnTutorial.setOnClickListener(v -> {
-            Intent intent = new Intent(LoginActivity.this, TutorialActivity.class);
-            startActivity(intent);
-        });
+        btnMusic = findViewById(R.id.btnMusic);
+        tvMusic = findViewById(R.id.tvMusic);
 
         btnMusic.setOnClickListener(v -> {
-            Toast.makeText(this, "Music toggle clicked", Toast.LENGTH_SHORT).show();
+            if (!MusicManager.isPlaying()) {
+                MusicManager.startMusic(this);
+                tvMusic.setText("Tắt Nhạc 🎵");
+            } else {
+                MusicManager.stopMusic();
+                tvMusic.setText("Bật Nhạc 🎶");
+            }
         });
 
         btnLogin.setOnClickListener(v -> {

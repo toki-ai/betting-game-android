@@ -6,16 +6,15 @@ import android.content.Intent;
 import android.os.Handler;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
+import android.widget.Button;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.bettinggame.MainActivity;
 import com.example.bettinggame.R;
 import com.example.bettinggame.RaceResultsActivity;
-
 import pl.droidsonroids.gif.GifDrawable;
 import java.io.IOException;
 import java.util.Random;
@@ -25,18 +24,25 @@ public class RaceManager {
     private final SeekBar[] seekBars;
     private final int screenWidth;
     private final BettingConfig betManager;
+    private final BackgroundAnimationManager backgroundAnimationManager;
+    private final FinishLineManager finishLineManager;
     private final Handler handler = new Handler();
     private ObjectAnimator[] duckAnimators = new ObjectAnimator[4];
     private GifDrawable[] gifThumbs = new GifDrawable[4];
     private boolean raceRunning = false;
     private boolean raceFinished = false;
     private long raceStartTime = 0;
+    private String playerName;
 
-    public RaceManager(AppCompatActivity activity, SeekBar[] seekBars, int screenWidth, BettingConfig betManager) {
+    public RaceManager(AppCompatActivity activity, SeekBar[] seekBars, int screenWidth, BettingConfig betManager,
+                       BackgroundAnimationManager backgroundAnimationManager, FinishLineManager finishLineManager, String playerName) {
         this.activity = activity;
         this.seekBars = seekBars;
         this.screenWidth = screenWidth;
         this.betManager = betManager;
+        this.backgroundAnimationManager = backgroundAnimationManager;
+        this.finishLineManager = finishLineManager;
+        this.playerName = playerName;
         initializeGifs();
     }
 
@@ -85,6 +91,8 @@ public class RaceManager {
         setBetButtonsEnabled(false);
 
         updateGifThumbsForRace();
+        backgroundAnimationManager.startBackgroundAnimations(); // Start background animations
+        finishLineManager.startFinishLineMovement(seekBars[0]); // Start finish line movement
 
         handler.removeCallbacksAndMessages(null);
         raceFinished = false;
@@ -209,6 +217,8 @@ public class RaceManager {
             }
         }
         handler.removeCallbacksAndMessages(null);
+        backgroundAnimationManager.cleanup(); // Stop background animations
+        finishLineManager.cleanup(); // Stop finish line movement
         raceRunning = false;
 
         activity.runOnUiThread(() -> {
@@ -236,6 +246,9 @@ public class RaceManager {
     private void announceWinner(int winnerIndex) {
         Toast.makeText(activity, "🏆 Vịt thắng: " + (winnerIndex + 1), Toast.LENGTH_LONG).show();
         Intent intent = new Intent(activity, RaceResultsActivity.class);
+        if (activity instanceof MainActivity) {
+            intent.putExtra("username", playerName);
+        }
         activity.startActivity(intent);
     }
 
@@ -252,5 +265,7 @@ public class RaceManager {
             }
         }
         handler.removeCallbacksAndMessages(null);
+        backgroundAnimationManager.cleanup();
+        finishLineManager.cleanup();
     }
 }

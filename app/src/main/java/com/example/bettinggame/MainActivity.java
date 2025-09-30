@@ -21,11 +21,11 @@ import com.example.bettinggame.services.BackgroundAnimationManager;
 import com.example.bettinggame.services.BettingConfig;
 import com.example.bettinggame.services.BettingManager;
 import com.example.bettinggame.services.FinishLineManager;
+import com.example.bettinggame.services.MusicManager;
 import com.example.bettinggame.services.RaceManager;
 
 import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
-import com.example.bettinggame.Constants;
 import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
@@ -37,8 +37,8 @@ public class MainActivity extends AppCompatActivity {
     private View finishLine;
     private Button btnStart, btnBet1, btnBet2, btnBet3, btnBet4;
     private ImageButton btnCancelBet1, btnCancelBet2, btnCancelBet3, btnCancelBet4;
-    private ImageButton btnTutorial, btnMusic;
-    private TextView tvBalance, tvBet1, tvBet2, tvBet3, tvBet4, tvUsername;
+    private ImageButton btnTutorial, btnMusic, btnLogOut, btnDeposit;
+    private TextView tvBalance, tvBet1, tvBet2, tvBet3, tvBet4, tvUsername, tvMusic;
     private View betPanel;
     private int screenWidth;
 
@@ -46,9 +46,9 @@ public class MainActivity extends AppCompatActivity {
     private BettingManager bettingManager;
     private BackgroundAnimationManager backgroundAnimationManager;
     private FinishLineManager finishLineManager;
-    private final BettingConfig betManager;
+    private BettingConfig betManager;
 
-    private String playerName = Constants.DEFAULT_PLAYER_NAME;
+    public String playerName = Constants.DEFAULT_PLAYER_NAME;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,11 +78,10 @@ public class MainActivity extends AppCompatActivity {
             tvUsername.setText(playerName);
         }
 
-        String username = getIntent().getStringExtra(playerName);
-    SharedPreferences prefs = getSharedPreferences(Constants.PREFS_NAME, Context.MODE_PRIVATE);
-        int coin = prefs.getInt(username, 0);
+        SharedPreferences prefs = getSharedPreferences(Constants.PREFS_NAME, Context.MODE_PRIVATE);
+        int coin = prefs.getInt(playerName, 0);
         betManager = new BettingConfig(coin);
-        
+
         seekBars = new SeekBar[]{
                 findViewById(R.id.seekBar1),
                 findViewById(R.id.seekBar2),
@@ -113,8 +112,11 @@ public class MainActivity extends AppCompatActivity {
         tvBet2 = findViewById(R.id.tvBet2);
         tvBet3 = findViewById(R.id.tvBet3);
         tvBet4 = findViewById(R.id.tvBet4);
+        tvMusic = findViewById(R.id.tvMusic);
         btnTutorial = findViewById(R.id.btnTutorial);
         btnMusic = findViewById(R.id.btnMusic);
+        btnLogOut = findViewById(R.id.btnLogOut);
+        btnDeposit = findViewById(R.id.btnDeposit);
         betPanel = findViewById(R.id.betPanel);
 
         DisplayMetrics metrics = getResources().getDisplayMetrics();
@@ -122,12 +124,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initializeManagers() {
-        raceManager = new RaceManager(this, seekBars, screenWidth, betManager);
         bettingManager = new BettingManager(this, btnBet1, btnBet2, btnBet3, btnBet4,
                 btnCancelBet1, btnCancelBet2, btnCancelBet3, btnCancelBet4,
                 tvBet1, tvBet2, tvBet3, tvBet4, betPanel, betManager);
         backgroundAnimationManager = new BackgroundAnimationManager(grass1, grass2, water1, water2);
         finishLineManager = new FinishLineManager(finishLine, screenWidth);
+        raceManager = new RaceManager(this, seekBars, screenWidth, betManager, backgroundAnimationManager, finishLineManager, playerName);
     }
 
     private void setupListeners() {
@@ -142,10 +144,49 @@ public class MainActivity extends AppCompatActivity {
         btnCancelBet4.setOnClickListener(v -> bettingManager.cancelCurrentBet(3));
         btnTutorial.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, TutorialActivity.class);
+            intent.putExtra("username", playerName);
             startActivity(intent);
         });
         btnMusic.setOnClickListener(v -> {
-            Toast.makeText(this, "Music toggle clicked", Toast.LENGTH_SHORT).show();
+            if (!MusicManager.isPlaying()) {
+                MusicManager.startMusic(this);
+                tvMusic.setText("Tắt Nhạc 🎵");
+            } else {
+                MusicManager.stopMusic();
+                tvMusic.setText("Bật Nhạc 🎶");
+            }
+        });
+        btnLogOut.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(intent);
+            finish();
+        });
+        btnDeposit.setOnClickListener(v -> {
+            android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
+            builder.setTitle("Nạp thêm xu");
+            final android.widget.EditText input = new android.widget.EditText(this);
+            input.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
+            builder.setView(input);
+            builder.setPositiveButton("Nạp", (dialog, which) -> {
+                String value = input.getText().toString().trim();
+                int addAmount = 0;
+                try {
+                    addAmount = Integer.parseInt(value);
+                } catch (Exception e) {
+                    addAmount = 0;
+                }
+                if (addAmount > 0) {
+                    betManager.setBalance(betManager.getBalance() + addAmount);
+                    SharedPreferences prefs = getSharedPreferences(Constants.PREFS_NAME, Context.MODE_PRIVATE);
+                    prefs.edit().putInt(playerName, betManager.getBalance()).apply();
+                    updateBalanceText();
+                    Toast.makeText(this, "Nạp thành công!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "Vui lòng nhập số hợp lệ", Toast.LENGTH_SHORT).show();
+                }
+            });
+            builder.setNegativeButton("Hủy", (dialog, which) -> dialog.cancel());
+            builder.show();
         });
     }
 

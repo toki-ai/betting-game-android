@@ -54,44 +54,25 @@
         />
 
     <ImageButton
-        android:id="@+id/btnTutorial"
+        android:id="@+id/btnMusic"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:src="@drawable/ic_book"
+        android:src="@drawable/ic_music"
         android:layout_marginTop="30dp"
         android:layout_marginEnd="24dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="Tutorial"
         android:scaleType="centerCrop"
+        android:soundEffectsEnabled="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView
+        android:id="@+id/tvMusic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="7sp"
-        android:text="Hướng dẫn"
-        app:layout_constraintTop_toBottomOf="@+id/btnTutorial"
-        app:layout_constraintStart_toStartOf="@+id/btnTutorial"/>
-
-    <ImageButton
-        android:id="@+id/btnMusic"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:src="@drawable/ic_music"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="Music"
-        android:layout_marginEnd="12dp"
-        app:layout_constraintTop_toTopOf="@+id/btnTutorial"
-        android:scaleType="centerCrop"
-        app:layout_constraintEnd_toStartOf="@+id/btnTutorial"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="7sp"
-        android:text="Nhạc nền"
+        android:text="Bật nhạc"
         app:layout_constraintTop_toBottomOf="@+id/btnMusic"
         app:layout_constraintStart_toStartOf="@+id/btnMusic"/>
 

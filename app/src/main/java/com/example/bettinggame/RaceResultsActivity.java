@@ -22,11 +22,20 @@ public class RaceResultsActivity extends AppCompatActivity {
     private RecyclerView recyclerViewResults;
     private RaceResultAdapter adapter;
     private ArrayList<RaceResult> raceResultsList;
+    private String playerName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_race_results);
+
+        Intent intent = getIntent();
+        if (intent != null && intent.hasExtra("username")) {
+            String name = intent.getStringExtra("username");
+            if (name != null && !name.trim().isEmpty()) {
+                playerName = name.trim();
+            }
+        }
 
         TextView textViewTitle = findViewById(R.id.textViewTitle);
         recyclerViewResults = findViewById(R.id.recyclerViewResults);
@@ -55,6 +64,7 @@ public class RaceResultsActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(RaceResultsActivity.this, MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra("username", playerName);
                 startActivity(intent);
                 finish();
             }

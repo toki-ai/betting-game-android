@@ -19,11 +19,20 @@ public class TutorialActivity extends AppCompatActivity {
     private ImageButton buttonPrevious;
     private ImageButton buttonNext;
     private Button buttonStartGame;
+    private String playerName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tutorial);
+
+        Intent intent = getIntent();
+        if (intent != null && intent.hasExtra("username")) {
+            String name = intent.getStringExtra("username");
+            if (name != null && !name.trim().isEmpty()) {
+                playerName = name.trim();
+            }
+        }
 
         viewPagerTutorial = findViewById(R.id.viewPagerTutorial);
         buttonPrevious = findViewById(R.id.buttonPrevious);
@@ -60,10 +69,10 @@ public class TutorialActivity extends AppCompatActivity {
         });
 
         buttonStartGame.setOnClickListener(v -> {
-            // Navigate to MainActivity or your main game screen
-            Intent intent = new Intent(TutorialActivity.this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
+            Intent startGameIntent = new Intent(TutorialActivity.this, MainActivity.class);
+            startGameIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startGameIntent.putExtra("username", playerName);
+            startActivity(startGameIntent);
             finish(); // Close tutorial activity
         });
     }

@@ -40,7 +40,7 @@ public class BettingConfig {
 
     public ValidationResult validateBet(int amount) {
     if (amount < Constants.MIN_BET) {
-            return ValidationResult.error("Tối thiểu " + MIN_BET);
+            return ValidationResult.error("Tối thiểu " + Constants.MIN_BET);
         }
         if (amount > balance) {
             return ValidationResult.error("Vượt số dư hiện có");
