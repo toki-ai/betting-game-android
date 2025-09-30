@@ -35,6 +35,12 @@
         android:layout_height="match_parent"
         android:padding="12dp">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal">
+
         <!-- Panel đặt cược: hiển thị số dư & kết quả (đặt tiền trực tiếp tại từng lane) -->
         <LinearLayout
             android:id="@+id/betPanel"
@@ -76,18 +82,27 @@
             android:orientation="horizontal"
             android:gravity="center_vertical"
             android:layout_marginBottom="8dp">
-            <Button
-                android:id="@+id/btnStart"
+                <Button
+                    android:id="@+id/btnStart"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Bắt đầu đua" />
             <Button
                 android:id="@+id/btnCancelBet"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
                 android:text="Hủy cược"
                 android:layout_marginStart="8dp"/>
+        </LinearLayout>
+
+            <Button
+                android:id="@+id/btnTutorial"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="Hướng Dẫn" />
         </LinearLayout>
 
         <!-- lane 1 -->
@@ -95,6 +110,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:layout_marginTop="16dp" 
             android:layout_marginBottom="8dp">
 
             <SeekBar
