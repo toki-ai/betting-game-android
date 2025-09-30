@@ -2,7 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="16dp">
+    android:paddingTop="8dp">
 
     <!-- Background chạy loop -->
     <ImageView
@@ -28,24 +28,74 @@
         android:background="@drawable/finish_line"
         android:visibility="gone" />
 
-    <!-- Foreground: Nút + đường đua -->
+    <!-- Foreground: Không dùng ScrollView, chia đều 4 lane theo trọng số để luôn thấy đủ -->
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="16dp">
+        android:padding="12dp">
 
-        <Button
-            android:id="@+id/btnStart"
-            android:layout_width="wrap_content"
+        <!-- Panel đặt cược: hiển thị số dư & kết quả (đặt tiền trực tiếp tại từng lane) -->
+        <LinearLayout
+            android:id="@+id/betPanel"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Start Race" />
+            android:orientation="vertical"
+            android:padding="8dp"
+            android:background="#80FFFFFF"
+            android:elevation="2dp"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:id="@+id/tvBalance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Balance: 1000"
+                android:textStyle="bold"
+                android:textSize="14sp" />
+
+            <!-- Bỏ chọn vịt và ô nhập chung; mỗi lane sẽ có ô nhập riêng -->
+
+            <TextView
+                android:id="@+id/tvResult"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textStyle="italic"
+                android:textSize="12sp"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:layout_marginTop="4dp"
+                android:visibility="gone"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
+            <Button
+                android:id="@+id/btnStart"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Bắt đầu đua" />
+            <Button
+                android:id="@+id/btnCancelBet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hủy cược"
+                android:layout_marginStart="8dp"/>
+        </LinearLayout>
 
         <!-- lane 1 -->
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="72dp"
-            android:layout_marginBottom="12dp">
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginBottom="8dp">
 
             <SeekBar
                 android:id="@+id/seekBar1"
@@ -61,13 +111,34 @@
                 android:layout_height="72dp"
                 android:layout_gravity="center_vertical"
                 android:src="@drawable/animal1_idle"/>
+
+            <Button
+                android:id="@+id/btnBet1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|start"
+                android:layout_margin="8dp"
+                android:text="Đặt"/>
+
+            <TextView
+                android:id="@+id/tvBet1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|start"
+                android:layout_marginStart="8dp"
+                android:background="#66000000"
+                android:textColor="#FFFFFF"
+                android:padding="6dp"
+                android:text="0"
+                android:visibility="gone"/>
         </FrameLayout>
 
         <!-- lane 2 -->
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="72dp"
-            android:layout_marginBottom="12dp">
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginBottom="8dp">
 
             <SeekBar
                 android:id="@+id/seekBar2"
@@ -83,13 +154,34 @@
                 android:layout_height="72dp"
                 android:layout_gravity="center_vertical"
                 android:src="@drawable/animal2_idle"/>
+
+            <Button
+                android:id="@+id/btnBet2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|start"
+                android:layout_margin="8dp"
+                android:text="Đặt"/>
+
+            <TextView
+                android:id="@+id/tvBet2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|start"
+                android:layout_marginStart="8dp"
+                android:background="#66000000"
+                android:textColor="#FFFFFF"
+                android:padding="6dp"
+                android:text="0"
+                android:visibility="gone"/>
         </FrameLayout>
 
         <!-- lane 3 -->
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="72dp"
-            android:layout_marginBottom="12dp">
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginBottom="8dp">
 
             <SeekBar
                 android:id="@+id/seekBar3"
@@ -105,13 +197,34 @@
                 android:layout_height="72dp"
                 android:layout_gravity="center_vertical"
                 android:src="@drawable/animal3_idle"/>
+
+            <Button
+                android:id="@+id/btnBet3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|start"
+                android:layout_margin="8dp"
+                android:text="Đặt"/>
+
+            <TextView
+                android:id="@+id/tvBet3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|start"
+                android:layout_marginStart="8dp"
+                android:background="#66000000"
+                android:textColor="#FFFFFF"
+                android:padding="6dp"
+                android:text="0"
+                android:visibility="gone"/>
         </FrameLayout>
 
         <!-- lane 4 -->
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="72dp"
-            android:layout_marginBottom="12dp">
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginBottom="0dp">
 
             <SeekBar
                 android:id="@+id/seekBar4"
@@ -127,6 +240,26 @@
                 android:layout_height="72dp"
                 android:layout_gravity="center_vertical"
                 android:src="@drawable/animal4_idle"/>
+
+            <Button
+                android:id="@+id/btnBet4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|start"
+                android:layout_margin="8dp"
+                android:text="Đặt"/>
+
+            <TextView
+                android:id="@+id/tvBet4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|start"
+                android:layout_marginStart="8dp"
+                android:background="#66000000"
+                android:textColor="#FFFFFF"
+                android:padding="6dp"
+                android:text="0"
+                android:visibility="gone"/>
         </FrameLayout>
 
     </LinearLayout>
