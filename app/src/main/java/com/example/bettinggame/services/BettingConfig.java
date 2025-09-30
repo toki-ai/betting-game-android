@@ -1,11 +1,12 @@
 package com.example.bettinggame.services;
 
+
+import com.example.bettinggame.Constants;
 import java.text.NumberFormat;
 import java.util.Locale;
 
 public class BettingConfig {
 
-    public static final int MIN_BET = 100;
 
     private final NumberFormat intFormatter = NumberFormat.getIntegerInstance(Locale.getDefault());
 
@@ -38,7 +39,7 @@ public class BettingConfig {
     }
 
     public ValidationResult validateBet(int amount) {
-        if (amount < MIN_BET) {
+    if (amount < Constants.MIN_BET) {
             return ValidationResult.error("Tối thiểu " + MIN_BET);
         }
         if (amount > balance) {

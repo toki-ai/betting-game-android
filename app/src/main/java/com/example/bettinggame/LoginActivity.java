@@ -50,7 +50,7 @@ public class LoginActivity extends AppCompatActivity {
                 coin = prefs.getInt(username, 0);
                 Toast.makeText(this, "Welcome back " + username + " (Coins: " + coin + ")", Toast.LENGTH_SHORT).show();
             } else {
-                coin = 500;
+                coin = Constants.DEFAULT_BALANCE;
                 prefs.edit().putInt(username, coin).apply();
                 Toast.makeText(this, "New user created: " + username + " (Coins: " + coin + ")", Toast.LENGTH_SHORT).show();
             }

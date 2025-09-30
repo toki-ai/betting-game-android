@@ -25,6 +25,7 @@ import com.example.bettinggame.services.RaceManager;
 
 import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
+import com.example.bettinggame.Constants;
 import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
@@ -37,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private Button btnStart, btnBet1, btnBet2, btnBet3, btnBet4;
     private ImageButton btnCancelBet1, btnCancelBet2, btnCancelBet3, btnCancelBet4;
     private ImageButton btnTutorial, btnMusic;
-    private TextView tvBalance, tvBet1, tvBet2, tvBet3, tvBet4;
+    private TextView tvBalance, tvBet1, tvBet2, tvBet3, tvBet4, tvUsername;
     private View betPanel;
     private int screenWidth;
 
@@ -45,13 +46,23 @@ public class MainActivity extends AppCompatActivity {
     private BettingManager bettingManager;
     private BackgroundAnimationManager backgroundAnimationManager;
     private FinishLineManager finishLineManager;
-    private final BettingConfig betManager = new BettingConfig(1000);
+    private final BettingConfig betManager;
+
+    private String playerName = Constants.DEFAULT_PLAYER_NAME;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+
+        Intent intent = getIntent();
+        if (intent != null && intent.hasExtra("username")) {
+            String name = intent.getStringExtra("username");
+            if (name != null && !name.trim().isEmpty()) {
+                playerName = name.trim();
+            }
+        }
 
         initializeUI();
         initializeManagers();
@@ -62,10 +73,16 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressLint("ClickableViewAccessibility")
     private void initializeUI() {
-        String username = getIntent().getStringExtra("username");
-        SharedPreferences prefs = getSharedPreferences("BettingGamePrefs", Context.MODE_PRIVATE);
-        int coin = prefs.getInt(username, 0);
+        tvUsername = findViewById(R.id.tvUsername); 
+        if (tvUsername != null) {
+            tvUsername.setText(playerName);
+        }
 
+        String username = getIntent().getStringExtra(playerName);
+    SharedPreferences prefs = getSharedPreferences(Constants.PREFS_NAME, Context.MODE_PRIVATE);
+        int coin = prefs.getInt(username, 0);
+        betManager = new BettingConfig(coin);
+        
         seekBars = new SeekBar[]{
                 findViewById(R.id.seekBar1),
                 findViewById(R.id.seekBar2),
@@ -152,7 +169,10 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressLint("SetTextI18n")
     public void updateBalanceText() {
-        tvBalance.setText("Balance: " + betManager.formatInt(betManager.getBalance()));
+           tvBalance.setText("Balance: " + betManager.formatInt(betManager.getBalance()));
+
+           SharedPreferences prefs = getSharedPreferences(Constants.PREFS_NAME, Context.MODE_PRIVATE);
+           prefs.edit().putInt(playerName, betManager.getBalance()).apply();
     }
 
     @Override
