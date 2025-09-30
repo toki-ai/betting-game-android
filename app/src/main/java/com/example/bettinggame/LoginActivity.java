@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -15,6 +16,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private EditText etUsername;
     private Button btnLogin;
+    private ImageButton btnTutorial, btnMusic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +26,15 @@ public class LoginActivity extends AppCompatActivity {
 
         etUsername = findViewById(R.id.etUsername);
         btnLogin = findViewById(R.id.btnLogin);
+
+        btnTutorial.setOnClickListener(v -> {
+            Intent intent = new Intent(LoginActivity.this, TutorialActivity.class);
+            startActivity(intent);
+        });
+
+        btnMusic.setOnClickListener(v -> {
+            Toast.makeText(this, "Music toggle clicked", Toast.LENGTH_SHORT).show();
+        });
 
         btnLogin.setOnClickListener(v -> {
             String username = etUsername.getText().toString().trim();

@@ -3,11 +3,7 @@ package com.example.bettinggame.services;
 import java.text.NumberFormat;
 import java.util.Locale;
 
-/**
- * Quản lý logic đặt cược: parse, validate, format, settle payout.
- * Giữ class này không phụ thuộc UI để dễ test.
- */
-public class BetManager {
+public class BettingConfig {
 
     public static final int MIN_BET = 100;
 
@@ -15,7 +11,7 @@ public class BetManager {
 
     private int balance;
 
-    public BetManager(int initialBalance) {
+    public BettingConfig(int initialBalance) {
         this.balance = Math.max(0, initialBalance);
     }
 
