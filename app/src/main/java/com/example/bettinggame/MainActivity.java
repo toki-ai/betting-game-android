@@ -1,8 +1,11 @@
 package com.example.bettinggame;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
@@ -13,19 +16,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.SeekBar;
 import android.widget.Toast;
-
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.bumptech.glide.Glide;
 import com.example.bettinggame.bet.BetManager;
 import java.util.Random;
-
+import pl.droidsonroids.gif.GifDrawable;
+import java.io.IOException;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
+import android.view.animation.LinearInterpolator;
 
 public class MainActivity extends AppCompatActivity {
 
     private SeekBar[] seekBars;
-    private ImageView[] animals;
     private String[] duckNames = {"Vịt 1", "Vịt 2", "Vịt 3", "Vịt 4"};
     private Handler handler = new Handler();
     private boolean raceFinished = false;
@@ -34,11 +37,10 @@ public class MainActivity extends AppCompatActivity {
     private ImageView bg1, bg2;
     private View finishLine;
     private Handler bgHandler = new Handler();
-
     private int bgSpeed = 5;
     private boolean bgRunning = false;
 
-    // finish line movement
+    // Finish line movement
     private boolean finishLineMoving = false;
     private float targetFinishX = 0f;
     private int finishSpeed = 8;
@@ -49,14 +51,20 @@ public class MainActivity extends AppCompatActivity {
     private boolean raceRunning = false;
 
     // Betting UI
-    // Per-lane bet buttons (mở dialog nhập tiền)
     private Button btnBet1, btnBet2, btnBet3, btnBet4, btnCancelBet;
     private TextView tvBet1, tvBet2, tvBet3, tvBet4;
     private TextView tvBalance, tvResult;
     private View betPanel;
-    private int selectedDuckIndex = -1; // chưa chọn
-    // Tách sang BetManager để quản lý số dư và validate/payout
+    private int selectedDuckIndex = -1;
     private BetManager betManager = new BetManager(1000);
+    private int currentBetAmount = 0;
+
+    // Animation
+    private ObjectAnimator[] duckAnimators = new ObjectAnimator[4];
+    private long raceStartTime = 0;
+    
+    // GIF thumbs
+    private GifDrawable[] gifThumbs = new GifDrawable[4];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +73,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         String username = getIntent().getStringExtra("username");
-
         SharedPreferences prefs = getSharedPreferences("BettingGamePrefs", Context.MODE_PRIVATE);
         int coin = prefs.getInt(username, 0);
 
@@ -73,14 +80,7 @@ public class MainActivity extends AppCompatActivity {
                 findViewById(R.id.seekBar1),
                 findViewById(R.id.seekBar2),
                 findViewById(R.id.seekBar3),
-                findViewById(R.id.seekBar4),
-        };
-
-        animals = new ImageView[]{
-                findViewById(R.id.animal1),
-                findViewById(R.id.animal2),
-                findViewById(R.id.animal3),
-                findViewById(R.id.animal4),
+                findViewById(R.id.seekBar4)
         };
 
         bg1 = findViewById(R.id.bg1);
@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
 
         btnStart.setOnClickListener(v -> startRace());
 
-        // Ánh xạ view đặt cược
+        // Betting UI setup
         tvBalance = findViewById(R.id.tvBalance);
         tvResult = findViewById(R.id.tvResult);
         betPanel = findViewById(R.id.betPanel);
@@ -109,64 +109,84 @@ public class MainActivity extends AppCompatActivity {
         tvBet3 = findViewById(R.id.tvBet3);
         tvBet4 = findViewById(R.id.tvBet4);
 
-        // Thiết lập chọn đặt cược qua dialog, chỉ cho phép một lựa chọn.
         btnBet1.setOnClickListener(v -> promptBetForDuck(0));
         btnBet2.setOnClickListener(v -> promptBetForDuck(1));
         btnBet3.setOnClickListener(v -> promptBetForDuck(2));
         btnBet4.setOnClickListener(v -> promptBetForDuck(3));
         btnCancelBet.setOnClickListener(v -> cancelCurrentBet());
 
-        // Khởi tạo hiển thị lần đầu
         updateBetLabels();
         updateBetButtonsVisibility();
-
-        // Cập nhật text số dư ban đầu
         updateBalanceText();
-
-        // Không còn radio chọn vịt; xác định qua ô nhập tiền của từng lane
 
         btnTutorial.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, TutorialActivity.class);
             startActivity(intent);
         });
+
+        // Setup animated GIF thumbs
+        int thumbSize = dpToPx(60);
+        try {
+            for (int i = 0; i < seekBars.length; i++) {
+                gifThumbs[i] = new GifDrawable(getResources(), R.drawable.animal);
+                gifThumbs[i].setBounds(0, 0, thumbSize, thumbSize);
+                seekBars[i].setThumb(gifThumbs[i]);
+                gifThumbs[i].start(); // Bắt đầu animation GIF
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private int dpToPx(int dp) {
+        return (int) (dp * getResources().getDisplayMetrics().density);
     }
 
     private void startRace() {
         if (raceRunning) return;
 
-        // Sử dụng lựa chọn đã được lưu từ dialog
         if (selectedDuckIndex < 0) {
             Toast.makeText(this, "Chọn 1 con vịt để đặt cược", Toast.LENGTH_SHORT).show();
             return;
         }
         int betAmount = currentBetAmount;
-        // Lấy tiền cược và kiểm tra hợp lệ trước khi bắt đầu đua
         BetManager.ValidationResult vr = betManager.validateBet(betAmount);
         if (!vr.valid) {
             Toast.makeText(this, vr.message != null ? vr.message : "Tiền cược không hợp lệ", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Trừ tiền cược ngay khi bắt đầu để tránh spam đổi kết quả
         betManager.applyBetStart(betAmount);
         updateBalanceText();
-        // Thông báo vui tuỳ theo mức tiền cược
         Toast.makeText(this, getBetTaunt(betAmount), Toast.LENGTH_SHORT).show();
         tvResult.setText("Đang đua... Chúc may mắn!");
         tvResult.setVisibility(View.VISIBLE);
-        // Ẩn panel đặt cược để người chơi theo dõi đường đua rõ ràng
         if (betPanel != null) betPanel.setVisibility(View.GONE);
 
-        // bật cờ chạy, disable button và các control đặt cược
         raceRunning = true;
         btnStart.setEnabled(false);
         btnStart.setText("Đang đua...");
         btnTutorial.setEnabled(false);
         setBetButtonsEnabled(false);
 
+        // Tăng tốc GIF khi đua
+        for (GifDrawable gif : gifThumbs) {
+            if (gif != null) {
+                gif.setSpeed(2.0f); // Chạy nhanh gấp đôi
+            }
+        }
+
+        // Hủy tất cả animation cũ
+        for (int i = 0; i < duckAnimators.length; i++) {
+            if (duckAnimators[i] != null) {
+                duckAnimators[i].cancel();
+                duckAnimators[i] = null;
+            }
+        }
         handler.removeCallbacksAndMessages(null);
         bgHandler.removeCallbacksAndMessages(null);
         raceFinished = false;
+        raceStartTime = System.currentTimeMillis();
 
         finishLine.setVisibility(View.VISIBLE);
         final float initialFinishX = screenWidth + 400;
@@ -182,40 +202,63 @@ public class MainActivity extends AppCompatActivity {
             bgHandler.post(finishRunnable);
         });
 
-        // Chốt tiền cược và lựa chọn cho vòng này để dùng trong inner class (phải là final/effectively final)
         final int betForRace = betAmount;
         final int chosenDuckAtStart = selectedDuckIndex;
 
-        for (int i = 0; i < animals.length; i++) {
-            int index = i;
+        final int SMOOTH_MAX = 10000;
+        int[] winnerIndex = {-1};
+        
+        for (int i = 0; i < seekBars.length; i++) {
+            final int index = i;
+            seekBars[index].setMax(SMOOTH_MAX);
             seekBars[index].setProgress(0);
-            int runResId = getResources().getIdentifier("animal" + (index + 1) + "_run", "drawable", getPackageName());
-            Glide.with(this).asGif().load(runResId).into(animals[index]);
-            float speed = (new Random().nextInt(3) + 2) * 0.05f;
+            
+            // Tốc độ ngẫu nhiên - thời gian hoàn thành
+            final float baseSpeed = (new Random().nextFloat() * 0.5f + 0.5f);
+            final long totalDuration = (long)(8000 + baseSpeed * 4000); // 8-12 giây
 
-            handler.postDelayed(new Runnable() {
-                float progress = 0;
+            // Dùng ObjectAnimator - MƯỢT TUYỆT ĐỐI
+            ObjectAnimator animator = ObjectAnimator.ofInt(seekBars[index], "progress", 0, SMOOTH_MAX);
+            animator.setDuration(totalDuration);
+            animator.setInterpolator(new LinearInterpolator());
+            
+            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                private boolean hasFinished = false;
+                
                 @Override
-                public void run() {
-                    if (raceFinished) return;
-                    progress += speed;
-                    if (progress <= 100) {
-                        seekBars[index].setProgress((int) progress);
-                        int barWidth = seekBars[index].getWidth() - animals[index].getWidth();
-                        float posX = seekBars[index].getX() + (progress / 100f) * barWidth;
-                        animals[index].setX(posX);
-                        handler.postDelayed(this, 16);
-                    } else {
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    if (raceFinished || hasFinished) return;
+                    
+                    int currentValue = (int) animation.getAnimatedValue();
+                    
+                    // Kiểm tra về đích
+                    if (currentValue >= SMOOTH_MAX && !hasFinished) {
+                        hasFinished = true;
                         if (!raceFinished) {
                             raceFinished = true;
-                            // Tính payout trước khi reset trạng thái để không mất lựa chọn
-                            handlePayout(index, betForRace, chosenDuckAtStart);
-                            stopAllRunnables();
-                            announceWinner(index);
+                            winnerIndex[0] = index;
+                            
+                            // Dừng tất cả animation
+                            handler.postDelayed(() -> {
+                                for (ObjectAnimator anim : duckAnimators) {
+                                    if (anim != null) anim.cancel();
+                                }
+                                
+                                // Reset seekbar
+                                seekBars[index].setMax(100);
+                                seekBars[index].setProgress(100);
+                                
+                                handlePayout(index, betForRace, chosenDuckAtStart);
+                                stopAllRunnables();
+                                announceWinner(index);
+                            }, 100);
                         }
                     }
                 }
-            }, 16);
+            });
+            
+            duckAnimators[index] = animator;
+            animator.start();
         }
     }
 
@@ -252,27 +295,39 @@ public class MainActivity extends AppCompatActivity {
     };
 
     private void stopAllRunnables() {
+        // Reset tốc độ GIF về bình thường
+        for (GifDrawable gif : gifThumbs) {
+            if (gif != null) {
+                gif.setSpeed(1.0f);
+            }
+        }
+
+        // Hủy tất cả animators
+        for (int i = 0; i < duckAnimators.length; i++) {
+            if (duckAnimators[i] != null) {
+                duckAnimators[i].cancel();
+                duckAnimators[i] = null;
+            }
+        }
+        
         handler.removeCallbacksAndMessages(null);
         bgHandler.removeCallbacksAndMessages(null);
         bgRunning = false;
         finishLineMoving = false;
+        
         runOnUiThread(() -> {
             raceRunning = false;
             btnStart.setEnabled(true);
             btnStart.setText("Bắt đầu đua");
-            // Mở lại control đặt cược
             setBetButtonsEnabled(true);
-            // Hiện lại panel đặt cược và xoá tiền cược cũ để vòng mới rõ ràng
             if (betPanel != null) betPanel.setVisibility(View.VISIBLE);
             clearCurrentBet();
 
-            // Đưa vạch đích và các vịt về vị trí ban đầu
             if (finishLine != null) finishLine.setVisibility(View.GONE);
-            for (int i = 0; i < animals.length; i++) {
+            for (int i = 0; i < seekBars.length; i++) {
                 try {
+                    seekBars[i].setMax(100);
                     seekBars[i].setProgress(0);
-                    // Vị trí bắt đầu = mép trái của seekbar
-                    animals[i].setX(seekBars[i].getX());
                 } catch (Exception ignored) {}
             }
             btnTutorial.setEnabled(true);
@@ -280,21 +335,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void announceWinner(int winnerIndex) {
-        for (int j = 0; j < animals.length; j++) {
-            int idleResId = getResources().getIdentifier("animal" + (j + 1) + "_idle", "drawable", getPackageName());
-            Glide.with(this).load(idleResId).into(animals[j]);
-        }
-
         Toast.makeText(this, "🏆 Vịt thắng: " + (winnerIndex + 1), Toast.LENGTH_LONG).show();
         Intent intent = new Intent(MainActivity.this, RaceResultsActivity.class);
+        startActivity(intent);
     }
 
-    // ====== Betting helpers ======
     private void updateBalanceText() {
         tvBalance.setText("Balance: " + betManager.formatInt(betManager.getBalance()));
     }
-
-    // parseBetAmount -> đã chuyển sang BetManager
 
     private void setBetButtonsEnabled(boolean enabled) {
         if (btnBet1 != null) btnBet1.setEnabled(enabled);
@@ -304,10 +352,7 @@ public class MainActivity extends AppCompatActivity {
         if (btnCancelBet != null) btnCancelBet.setEnabled(enabled);
     }
 
-    private int currentBetAmount = 0;
-
     private void promptBetForDuck(int duckIndex) {
-        // Nếu đã chọn con khác rồi thì yêu cầu hủy trước khi chọn lại
         if (currentBetAmount > 0 && selectedDuckIndex != duckIndex) {
             Toast.makeText(this, "Đã có cược đang chọn, bấm Hủy cược để đổi", Toast.LENGTH_SHORT).show();
             return;
@@ -362,13 +407,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateBetLabels() {
-        // Ẩn tất cả trước
         if (tvBet1 != null) { tvBet1.setVisibility(View.GONE); tvBet1.setText("0"); }
         if (tvBet2 != null) { tvBet2.setVisibility(View.GONE); tvBet2.setText("0"); }
         if (tvBet3 != null) { tvBet3.setVisibility(View.GONE); tvBet3.setText("0"); }
         if (tvBet4 != null) { tvBet4.setVisibility(View.GONE); tvBet4.setText("0"); }
 
-        // Hiện nhãn ở con đã chọn
         if (currentBetAmount > 0 && selectedDuckIndex >= 0) {
             String text = betManager.formatInt(currentBetAmount);
             if (selectedDuckIndex == 0 && tvBet1 != null) { tvBet1.setText(text); tvBet1.setVisibility(View.VISIBLE); }
@@ -379,8 +422,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateBetButtonsVisibility() {
-        // Khi đã chọn 1 con: ẩn nút Đặt của con đó, giữ các con khác để có thể bấm -> nhưng cấm bằng thông báo
-        // Theo yêu cầu: chỉ hiện lại nút đặt khi hủy
         if (btnBet1 != null) btnBet1.setVisibility(selectedDuckIndex == 0 && currentBetAmount > 0 ? View.GONE : View.VISIBLE);
         if (btnBet2 != null) btnBet2.setVisibility(selectedDuckIndex == 1 && currentBetAmount > 0 ? View.GONE : View.VISIBLE);
         if (btnBet3 != null) btnBet3.setVisibility(selectedDuckIndex == 2 && currentBetAmount > 0 ? View.GONE : View.VISIBLE);
@@ -388,7 +429,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void handlePayout(int winnerIndex, int betAmount, int chosenIndex) {
-        // Nếu chọn đúng vịt thắng -> + 2x tiền cược (lợi nhuận ròng = +betAmount)
         boolean win = (winnerIndex == chosenIndex);
         int profit = betManager.settle(win, betAmount);
         if (win) {
@@ -400,10 +440,20 @@ public class MainActivity extends AppCompatActivity {
         updateBalanceText();
     }
 
-    // Câu châm chọc theo mức cược
     private String getBetTaunt(int amount) {
         if (amount == 100) return "Cược ít thế!";
         if (amount == 1000) return "Thần tài đến, thần tài đến!";
         return "Chắc cốp dị cha!";
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Dọn dẹp GIF khi destroy
+        for (GifDrawable gif : gifThumbs) {
+            if (gif != null) {
+                gif.recycle();
+            }
+        }
     }
 }
