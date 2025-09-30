@@ -186,10 +186,6 @@ public class MainActivity extends AppCompatActivity {
         final int betForRace = betAmount;
         final int chosenDuckAtStart = selectedDuckIndex;
 
-        // Chốt tiền cược và lựa chọn cho vòng này để dùng trong inner class (phải là final/effectively final)
-        final int betForRace = betAmount;
-        final int chosenDuckAtStart = selectedDuckIndex;
-
         for (int i = 0; i < animals.length; i++) {
             int index = i;
             seekBars[index].setProgress(0);
