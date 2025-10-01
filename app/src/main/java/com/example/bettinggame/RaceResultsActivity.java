@@ -16,12 +16,13 @@ import com.example.bettinggame.model.RaceResult;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 public class RaceResultsActivity extends AppCompatActivity {
 
     private RecyclerView recyclerViewResults;
     private RaceResultAdapter adapter;
-    private ArrayList<RaceResult> raceResultsList;
+    private List<RaceResult> raceResultsList;
     private String playerName;
 
     @Override
