@@ -108,8 +108,8 @@ public class RaceManager {
             seekBars[index].setMax(SMOOTH_MAX);
             seekBars[index].setProgress(0);
 
-            final float baseSpeed = (new Random().nextFloat() * 0.5f + 0.5f);
-            final long totalDuration = (long) (10000 + baseSpeed * 5000);
+            final long totalDuration = 5000 + new Random().nextInt(10000); // 5–15s
+
 
             ObjectAnimator animator = ObjectAnimator.ofInt(seekBars[index], "progress", 0, SMOOTH_MAX);
             animator.setDuration(totalDuration);
