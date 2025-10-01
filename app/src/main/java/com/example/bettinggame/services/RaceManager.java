@@ -4,19 +4,28 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.Button;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.bettinggame.MainActivity;
 import com.example.bettinggame.R;
 import com.example.bettinggame.RaceResultsActivity;
+
+import com.example.bettinggame.model.RaceResult;
+import com.example.bettinggame.model.Duck;
+
 import pl.droidsonroids.gif.GifDrawable;
+
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class RaceManager {
@@ -33,6 +42,7 @@ public class RaceManager {
     private boolean raceFinished = false;
     private long raceStartTime = 0;
     private String playerName;
+    public final List<Duck> DUCK_LIST = List.of(new Duck("Vịt 1"), new Duck("Vịt 2"), new Duck("Vịt 3"), new Duck("Vịt 4"));
 
     public RaceManager(AppCompatActivity activity, SeekBar[] seekBars, int screenWidth, BettingConfig betManager,
                        BackgroundAnimationManager backgroundAnimationManager, FinishLineManager finishLineManager, String playerName) {
@@ -134,11 +144,30 @@ public class RaceManager {
                                 for (ObjectAnimator anim : duckAnimators) {
                                     if (anim != null) anim.cancel();
                                 }
+
+//                                1. Snapshot all ducks' position
+                                List<RaceResult> results = new ArrayList<>();
+                                for (int j = 0; j < seekBars.length; j++) {
+                                    int progress = seekBars[j].getProgress();
+                                    Duck duck = DUCK_LIST.get(j);
+                                    RaceResult rr = new RaceResult(duck, 0, 0);
+                                    rr.setProgress(progress); // helper for sorting
+                                    results.add(rr);
+                                }
+
+//                                  2. Sort by progress (descending)
+                                results.sort((a, b) -> Integer.compare(b.getProgress(), a.getProgress()));
+
+//                                  3. Assign ranks
+                                for (int r = 0; r < results.size(); r++) {
+                                    results.get(r).setRank(r + 1);
+                                }
                                 seekBars[index].setMax(100);
                                 seekBars[index].setProgress(100);
                                 handlePayout(index, betForRace, chosenDuckAtStart);
                                 resetRace();
-                                announceWinner(index);
+//                                 4. Announce winner and ranking
+                                announceWinner(index,results);
                             }, 100);
                         }
                     }
@@ -231,7 +260,8 @@ public class RaceManager {
                 try {
                     seekBars[i].setMax(100);
                     seekBars[i].setProgress(0);
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
             }
             resetGifs();
         });
@@ -243,11 +273,12 @@ public class RaceManager {
         ((MainActivity) activity).updateBalanceText();
     }
 
-    private void announceWinner(int winnerIndex) {
+    private void announceWinner(int winnerIndex, List<RaceResult> results) {
         Toast.makeText(activity, "🏆 Vịt thắng: " + (winnerIndex + 1), Toast.LENGTH_LONG).show();
         Intent intent = new Intent(activity, RaceResultsActivity.class);
         if (activity instanceof MainActivity) {
             intent.putExtra("username", playerName);
+            intent.putParcelableArrayListExtra("raceResults", new ArrayList<>(results));
         }
         activity.startActivity(intent);
     }
