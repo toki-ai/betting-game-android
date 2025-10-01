@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupListeners() {
-        btnStart.setOnClickListener(v -> raceManager.startRace(bettingManager.getSelectedDuckIndex(), bettingManager.getCurrentBetAmount()));
+        btnStart.setOnClickListener(v -> raceManager.startRace(-1, 0));
         btnBet1.setOnClickListener(v -> bettingManager.promptBetForDuck(0));
         btnBet2.setOnClickListener(v -> bettingManager.promptBetForDuck(1));
         btnBet3.setOnClickListener(v -> bettingManager.promptBetForDuck(2));
@@ -188,6 +188,10 @@ public class MainActivity extends AppCompatActivity {
             builder.setNegativeButton("Hủy", (dialog, which) -> dialog.cancel());
             builder.show();
         });
+    }
+
+    public BettingManager getBettingManager() {
+        return bettingManager;
     }
 
     private void setupAnimatedThumbs() {

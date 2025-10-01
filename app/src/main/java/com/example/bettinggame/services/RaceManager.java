@@ -67,20 +67,22 @@ public class RaceManager {
     public void startRace(int selectedDuckIndex, int currentBetAmount) {
         if (raceRunning) return;
 
-        if (selectedDuckIndex < 0) {
-            Toast.makeText(activity, "Chọn 1 con vịt để đặt cược", Toast.LENGTH_SHORT).show();
+        // Hỗ trợ đặt nhiều con: tính tổng cược và validate theo số dư
+        int[] laneBets = ((MainActivity) activity).getBettingManager().getBetAmounts();
+        int totalBet = 0; for (int v : laneBets) totalBet += v;
+        if (totalBet <= 0) {
+            Toast.makeText(activity, "Hãy đặt cược ít nhất 1 lane", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (totalBet > betManager.getBalance()) {
+            Toast.makeText(activity, "Tổng cược vượt số dư", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        BettingConfig.ValidationResult vr = betManager.validateBet(currentBetAmount);
-        if (!vr.valid) {
-            Toast.makeText(activity, vr.message != null ? vr.message : "Tiền cược không hợp lệ", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        betManager.applyBetStart(currentBetAmount);
+        // Trừ tổng cược ngay khi bắt đầu
+        betManager.applyBetStart(totalBet);
         ((MainActivity) activity).updateBalanceText();
-        Toast.makeText(activity, getBetTaunt(currentBetAmount), Toast.LENGTH_SHORT).show();
+        Toast.makeText(activity, "Đặt tổng: " + betManager.formatInt(totalBet), Toast.LENGTH_SHORT).show();
 
         raceRunning = true;
         ((MainActivity) activity).findViewById(R.id.betPanel).setVisibility(View.GONE);
@@ -98,8 +100,7 @@ public class RaceManager {
         raceFinished = false;
         raceStartTime = System.currentTimeMillis();
 
-        final int betForRace = currentBetAmount;
-        final int chosenDuckAtStart = selectedDuckIndex;
+        final int[] betsForRace = laneBets.clone();
         final int SMOOTH_MAX = 10000;
         int[] winnerIndex = {-1};
 
@@ -136,7 +137,7 @@ public class RaceManager {
                                 }
                                 seekBars[index].setMax(100);
                                 seekBars[index].setProgress(100);
-                                handlePayout(index, betForRace, chosenDuckAtStart);
+                                handlePayoutMulti(index, betsForRace);
                                 resetRace();
                                 announceWinner(index);
                             }, 100);
@@ -237,10 +238,13 @@ public class RaceManager {
         });
     }
 
-    private void handlePayout(int winnerIndex, int betAmount, int chosenIndex) {
-        boolean win = (winnerIndex == chosenIndex);
-        betManager.settle(win, betAmount);
-        ((MainActivity) activity).updateBalanceText();
+    private void handlePayoutMulti(int winnerIndex, int[] betsForRace) {
+        // Nếu người chơi đặt nhiều lane: lane thắng nhận 2x, lane thua không hoàn
+        int winAmount = (winnerIndex >= 0 && winnerIndex < betsForRace.length) ? betsForRace[winnerIndex] : 0;
+        if (winAmount > 0) {
+            betManager.settle(true, winAmount);
+            ((MainActivity) activity).updateBalanceText();
+        }
     }
 
     private void announceWinner(int winnerIndex) {

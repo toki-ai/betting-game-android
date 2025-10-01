@@ -16,8 +16,7 @@ public class BettingManager {
     private final TextView[] betTextViews;
     private final View betPanel;
     private final BettingConfig betManager;
-    private int selectedDuckIndex = -1;
-    private int currentBetAmount = 0;
+    private int[] betAmounts = new int[]{0,0,0,0};
 
     public BettingManager(AppCompatActivity activity, Button btnBet1, Button btnBet2, Button btnBet3, Button btnBet4,
                           ImageButton btnCancelBet1, ImageButton btnCancelBet2, ImageButton btnCancelBet3, ImageButton btnCancelBet4,
@@ -33,10 +32,6 @@ public class BettingManager {
     }
 
     public void promptBetForDuck(int duckIndex) {
-        if (currentBetAmount > 0 && selectedDuckIndex != duckIndex) {
-            Toast.makeText(activity, "Đã có cược đang chọn, bấm Hủy cược để đổi", Toast.LENGTH_SHORT).show();
-            return;
-        }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Đặt cho vịt " + (duckIndex + 1));
@@ -50,17 +45,27 @@ public class BettingManager {
 
         builder.setPositiveButton("OK", (dialog, which) -> {
             int amount = betManager.parseAmount(input.getText() != null ? input.getText().toString() : "");
-            BettingConfig.ValidationResult vr = betManager.validateBet(amount);
-            if (!vr.valid) {
-                Toast.makeText(activity, vr.message != null ? vr.message : "Tiền cược không hợp lệ", Toast.LENGTH_SHORT).show();
+            // Tính số dư còn lại sau khi trừ các cược hiện có (không tính vịt đang sửa)
+            int committed = 0;
+            for (int i = 0; i < betAmounts.length; i++) {
+                if (i == duckIndex) continue;
+                committed += betAmounts[i];
+            }
+            int remaining = betManager.getBalance() - committed;
+            if (amount < com.example.bettinggame.Constants.MIN_BET) {
+                Toast.makeText(activity, "Tối thiểu " + com.example.bettinggame.Constants.MIN_BET, Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
                 return;
             }
-            selectedDuckIndex = duckIndex;
-            currentBetAmount = amount;
+            if (amount > remaining) {
+                Toast.makeText(activity, "Không đủ số dư cho cược này", Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+                return;
+            }
+            betAmounts[duckIndex] = amount;
             updateBetLabels();
             updateBetButtonsVisibility();
-            Toast.makeText(activity, "Đã chọn vịt " + (duckIndex + 1) + ": " + betManager.formatInt(amount), Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, "Đặt vịt " + (duckIndex + 1) + ": " + betManager.formatInt(amount), Toast.LENGTH_SHORT).show();
         });
 
         builder.setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss());
@@ -68,15 +73,14 @@ public class BettingManager {
     }
 
     public void cancelCurrentBet(int duckIndex) {
-        if (currentBetAmount == 0 || selectedDuckIndex != duckIndex) {
+        if (betAmounts[duckIndex] == 0) {
             Toast.makeText(activity, "Chưa có cược để hủy", Toast.LENGTH_SHORT).show();
             return;
         }
-        selectedDuckIndex = -1;
-        currentBetAmount = 0;
+        betAmounts[duckIndex] = 0;
         updateBetLabels();
         updateBetButtonsVisibility();
-        Toast.makeText(activity, "Đã hủy cược", Toast.LENGTH_SHORT).show();
+        Toast.makeText(activity, "Đã hủy cược vịt " + (duckIndex + 1), Toast.LENGTH_SHORT).show();
     }
 
     private void updateBetLabels() {
@@ -89,13 +93,11 @@ public class BettingManager {
         for (ImageButton btn : cancelBetButtons) {
             if (btn != null) btn.setVisibility(View.GONE);
         }
-
-        if (currentBetAmount > 0 && selectedDuckIndex >= 0) {
-            String text = betManager.formatInt(currentBetAmount);
-            if (betTextViews[selectedDuckIndex] != null) {
-                betTextViews[selectedDuckIndex].setText(text);
-                betTextViews[selectedDuckIndex].setVisibility(View.VISIBLE);
-                cancelBetButtons[selectedDuckIndex].setVisibility(View.VISIBLE);
+        for (int i = 0; i < betTextViews.length; i++) {
+            if (betAmounts[i] > 0 && betTextViews[i] != null) {
+                betTextViews[i].setText(betManager.formatInt(betAmounts[i]));
+                betTextViews[i].setVisibility(View.VISIBLE);
+                if (cancelBetButtons[i] != null) cancelBetButtons[i].setVisibility(View.VISIBLE);
             }
         }
     }
@@ -103,23 +105,19 @@ public class BettingManager {
     private void updateBetButtonsVisibility() {
         for (int i = 0; i < betButtons.length; i++) {
             if (betButtons[i] != null) {
-                betButtons[i].setVisibility(selectedDuckIndex == i && currentBetAmount > 0 ? View.GONE : View.VISIBLE);
+                betButtons[i].setVisibility(betAmounts[i] > 0 ? View.GONE : View.VISIBLE);
             }
         }
     }
 
-    public void clearCurrentBet() {
-        selectedDuckIndex = -1;
-        currentBetAmount = 0;
+    public void clearAllBets() {
+        for (int i = 0; i < betAmounts.length; i++) betAmounts[i] = 0;
         updateBetLabels();
         updateBetButtonsVisibility();
     }
 
-    public int getSelectedDuckIndex() {
-        return selectedDuckIndex;
-    }
-
-    public int getCurrentBetAmount() {
-        return currentBetAmount;
+    public int[] getBetAmounts() { return betAmounts.clone(); }
+    public int getTotalBetAmount() {
+        int sum = 0; for (int v : betAmounts) sum += v; return sum;
     }
 }
