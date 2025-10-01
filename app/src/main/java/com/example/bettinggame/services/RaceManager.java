@@ -160,6 +160,13 @@ public class RaceManager {
 
 //                                  3. Assign ranks
                                 for (int r = 0; r < results.size(); r++) {
+                                    if (results.get(r).getDuck().getName().equals(DUCK_LIST.get(winnerIndex[0]).getName()) && selectedDuckIndex == winnerIndex[0]) {
+                                        results.get(r).setRank(1);
+                                        results.get(r).setAmountWon(betForRace * 2);
+                                        continue;
+                                    } else if (selectedDuckIndex != winnerIndex[0] && results.get(r).getDuck().getName().equals(DUCK_LIST.get(selectedDuckIndex).getName())) {
+                                       results.get(r).setAmountWon(-betForRace);
+                                    }
                                     results.get(r).setRank(r + 1);
                                 }
                                 seekBars[index].setMax(100);
