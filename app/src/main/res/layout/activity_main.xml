@@ -189,6 +189,14 @@
             android:scaleType="centerCrop"
             android:src="@drawable/water" />
 
+        <View
+            android:id="@+id/finishLine"
+            android:layout_width="32dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/finish_line"
+            android:visibility="gone"
+            android:layout_gravity="end" />
+
         <!-- 4 lane chia đều -->
         <LinearLayout
             android:layout_width="match_parent"
@@ -427,17 +435,8 @@
                     android:layout_marginStart="4dp" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
+
     </FrameLayout>
 
-    <!-- Vạch đích -->
-    <View
-        android:id="@+id/finishLine"
-        android:layout_width="32dp"
-        android:layout_height="0dp"
-        android:background="@drawable/finish_line"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/grassContainer"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
