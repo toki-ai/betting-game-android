@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 // Import các lớp model
 import com.example.bettinggame.model.Duck;
 import com.example.bettinggame.model.RaceResult;
+import com.example.bettinggame.services.AudioManagerUnified;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -63,9 +64,10 @@ public class RaceResultsActivity extends AppCompatActivity {
         buttonNewGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                AudioManagerUnified.playButtonSound(RaceResultsActivity.this);
                 Intent intent = new Intent(RaceResultsActivity.this, MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.putExtra("username", playerName);
+                // Bỏ flags để không clear stack và giữ music state
                 startActivity(intent);
                 finish();
             }
@@ -74,6 +76,7 @@ public class RaceResultsActivity extends AppCompatActivity {
         buttonQuit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                AudioManagerUnified.playButtonSound(RaceResultsActivity.this);
                 finishAffinity();
             }
         });
@@ -85,5 +88,29 @@ public class RaceResultsActivity extends AppCompatActivity {
         raceResultsList.add(new RaceResult(new Duck("Vịt Donald Mẫu"), 2, -50.0));
         raceResultsList.add(new RaceResult(new Duck("Vịt Daisy Mẫu"), 1, 150.0));
         raceResultsList.add(new RaceResult(new Duck("Vịt Daffy Mẫu"), 3, 0.0));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        AudioManagerUnified.onActivityResumed(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        AudioManagerUnified.onActivityPaused();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        AudioManagerUnified.onLowMemory();
+    }
+
+    @Override
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+        AudioManagerUnified.onTrimMemory(level);
     }
 }

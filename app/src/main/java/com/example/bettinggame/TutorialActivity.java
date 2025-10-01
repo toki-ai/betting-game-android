@@ -8,6 +8,8 @@ import android.widget.ImageButton;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 import com.example.bettinggame.model.TutorialStep;
+import com.example.bettinggame.services.AudioManagerUnified;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +27,8 @@ public class TutorialActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tutorial);
-
+        AudioManagerUnified.initialize(this);
+        
         Intent intent = getIntent();
         if (intent != null && intent.hasExtra("username")) {
             String name = intent.getStringExtra("username");
@@ -55,6 +58,7 @@ public class TutorialActivity extends AppCompatActivity {
         });
 
         buttonPrevious.setOnClickListener(v -> {
+            // Xóa sound khỏi previous button
             int currentItem = viewPagerTutorial.getCurrentItem();
             if (currentItem > 0) {
                 viewPagerTutorial.setCurrentItem(currentItem - 1);
@@ -62,6 +66,7 @@ public class TutorialActivity extends AppCompatActivity {
         });
 
         buttonNext.setOnClickListener(v -> {
+            // Xóa sound khỏi next button
             int currentItem = viewPagerTutorial.getCurrentItem();
             if (currentItem < tutorialSteps.size() - 1) {
                 viewPagerTutorial.setCurrentItem(currentItem + 1);
@@ -69,11 +74,11 @@ public class TutorialActivity extends AppCompatActivity {
         });
 
         buttonStartGame.setOnClickListener(v -> {
+            AudioManagerUnified.playButtonSound(this);
             Intent startGameIntent = new Intent(TutorialActivity.this, MainActivity.class);
-            startGameIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startGameIntent.putExtra("username", playerName);
             startActivity(startGameIntent);
-            finish(); // Close tutorial activity
+            finish(); 
         });
     }
 
@@ -112,5 +117,29 @@ public class TutorialActivity extends AppCompatActivity {
             buttonNext.setVisibility(View.VISIBLE);
             buttonStartGame.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        AudioManagerUnified.onActivityResumed(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        AudioManagerUnified.onActivityPaused();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        AudioManagerUnified.onLowMemory();
+    }
+
+    @Override
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+        AudioManagerUnified.onTrimMemory(level);
     }
 }

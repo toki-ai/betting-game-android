@@ -20,6 +20,7 @@ import com.example.bettinggame.RaceResultsActivity;
 
 import com.example.bettinggame.model.RaceResult;
 import com.example.bettinggame.model.Duck;
+import com.example.bettinggame.services.AudioManagerUnified;
 
 import pl.droidsonroids.gif.GifDrawable;
 
@@ -100,6 +101,9 @@ public class RaceManager {
         btnStart.setText("Đang đua...");
         activity.findViewById(R.id.btnTutorial).setEnabled(false);
         setBetButtonsEnabled(false);
+
+        // Bắt đầu phát nhạc game
+        AudioManagerUnified.startGameMusic(activity);
 
         updateGifThumbsForRace();
         backgroundAnimationManager.startBackgroundAnimations(); // Start background animations
@@ -191,6 +195,10 @@ public class RaceManager {
                                 seekBars[index].setProgress(100);
                                 handlePayoutMulti(index, betsForRace);
                                 resetRace();
+                                
+                                // Tắt nhạc game khi kết thúc đua
+                                AudioManagerUnified.stopGameMusic();
+                                
                                 announceWinner(index, results);
                             }, 100);
                         }

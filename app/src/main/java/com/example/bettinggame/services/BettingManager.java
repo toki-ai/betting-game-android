@@ -39,11 +39,15 @@ public class BettingManager {
         final EditText input = new EditText(activity);
         input.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
         input.setHint("Nhập tiền (min 100)");
+        
+        // Xóa typing sound để giảm tải
+        
         int padding = (int) (8 * activity.getResources().getDisplayMetrics().density);
         input.setPadding(padding, padding, padding, padding);
         builder.setView(input);
 
         builder.setPositiveButton("OK", (dialog, which) -> {
+            // Xóa sound khỏi OK button
             int amount = betManager.parseAmount(input.getText() != null ? input.getText().toString() : "");
             // Tính số dư còn lại sau khi trừ các cược hiện có (không tính vịt đang sửa)
             int committed = 0;
@@ -68,7 +72,10 @@ public class BettingManager {
             Toast.makeText(activity, "Đặt vịt " + (duckIndex + 1) + ": " + betManager.formatInt(amount), Toast.LENGTH_SHORT).show();
         });
 
-        builder.setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss());
+        builder.setNegativeButton("Hủy", (dialog, which) -> {
+            // Xóa sound khỏi Hủy button
+            dialog.dismiss();
+        });
         builder.show();
     }
 

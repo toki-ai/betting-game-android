@@ -37,8 +37,8 @@ public class MainActivity extends AppCompatActivity {
     private View finishLine;
     private Button btnStart, btnBet1, btnBet2, btnBet3, btnBet4;
     private ImageButton btnCancelBet1, btnCancelBet2, btnCancelBet3, btnCancelBet4;
-    private ImageButton btnTutorial, btnMusic, btnLogOut, btnDeposit;
-    private TextView tvBalance, tvBet1, tvBet2, tvBet3, tvBet4, tvUsername, tvMusic;
+    private ImageButton btnTutorial, btnLogOut, btnDeposit;
+    private TextView tvBalance, tvBet1, tvBet2, tvBet3, tvBet4, tvUsername;
     private View betPanel;
     private int screenWidth;
 
@@ -113,9 +113,7 @@ public class MainActivity extends AppCompatActivity {
         tvBet2 = findViewById(R.id.tvBet2);
         tvBet3 = findViewById(R.id.tvBet3);
         tvBet4 = findViewById(R.id.tvBet4);
-        tvMusic = findViewById(R.id.tvMusic);
         btnTutorial = findViewById(R.id.btnTutorial);
-        btnMusic = findViewById(R.id.btnMusic);
         btnLogOut = findViewById(R.id.btnLogOut);
         btnDeposit = findViewById(R.id.btnDeposit);
         betPanel = findViewById(R.id.betPanel);
@@ -135,13 +133,21 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupListeners() {
         btnStart.setOnClickListener(v -> {
-            AudioManagerUnified.playButtonSound(this);
             raceManager.startRace();
         });
-        btnBet1.setOnClickListener(v -> bettingManager.promptBetForDuck(0));
-        btnBet2.setOnClickListener(v -> bettingManager.promptBetForDuck(1));
-        btnBet3.setOnClickListener(v -> bettingManager.promptBetForDuck(2));
-        btnBet4.setOnClickListener(v -> bettingManager.promptBetForDuck(3));
+        btnBet1.setOnClickListener(v -> {
+            bettingManager.promptBetForDuck(0);
+        });
+        btnBet2.setOnClickListener(v -> {
+            bettingManager.promptBetForDuck(1);
+        });
+        btnBet3.setOnClickListener(v -> {
+            bettingManager.promptBetForDuck(2);
+        });
+        btnBet4.setOnClickListener(v -> {
+            bettingManager.promptBetForDuck(3);
+        });
+        // Xóa sound khỏi cancel buttons
         btnCancelBet1.setOnClickListener(v -> bettingManager.cancelCurrentBet(0));
         btnCancelBet2.setOnClickListener(v -> bettingManager.cancelCurrentBet(1));
         btnCancelBet3.setOnClickListener(v -> bettingManager.cancelCurrentBet(2));
@@ -152,16 +158,9 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra("username", playerName);
             startActivity(intent);
         });
-        btnMusic.setOnClickListener(v -> {
-            if (!AudioManagerUnified.isMusicPlaying()) {
-                AudioManagerUnified.startMusic(this);  // Sẽ handle resume nếu đã prepare
-                tvMusic.setText("Tắt Nhạc 🎵");
-            } else {
-                AudioManagerUnified.pauseMusic();  // Thay vì stopMusic
-                tvMusic.setText("Bật Nhạc 🎶");
-            }
-        });
+        // Xóa music button click listener
         btnLogOut.setOnClickListener(v -> {
+            AudioManagerUnified.playButtonSound(this);
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(intent);
             finish();
@@ -172,8 +171,12 @@ public class MainActivity extends AppCompatActivity {
             builder.setTitle("Nạp thêm xu");
             final android.widget.EditText input = new android.widget.EditText(this);
             input.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
+            
+            // Xóa typing sound để giảm tải
+            
             builder.setView(input);
             builder.setPositiveButton("Nạp", (dialog, which) -> {
+                // Xóa sound khỏi dialog buttons
                 String value = input.getText().toString().trim();
                 int addAmount = 0;
                 try {
@@ -237,23 +240,34 @@ public class MainActivity extends AppCompatActivity {
         raceManager.cleanup();
         backgroundAnimationManager.cleanup();
         finishLineManager.cleanup();
-        AudioManagerUnified.cleanup();
+        if (isFinishing()) {
+            AudioManagerUnified.cleanup();
+        }
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        AudioManagerUnified.onLowMemory();
+    }
+
+    @Override
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+        AudioManagerUnified.onTrimMemory(level);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (AudioManagerUnified.isMusicPlaying()) {
-            AudioManagerUnified.resumeMusic();
-        }
-        updateMusicUI();
+        AudioManagerUnified.onActivityResumed(this);
+        // Xóa music UI update và health check
     }
 
-    private void updateMusicUI() {
-        if (AudioManagerUnified.isMusicPlaying()) {
-            tvMusic.setText("Tắt Nhạc 🎵");
-        } else {
-            tvMusic.setText("Bật Nhạc 🎶");
-        }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        AudioManagerUnified.onActivityPaused();
+        // Xóa music health check stop
     }
 }
