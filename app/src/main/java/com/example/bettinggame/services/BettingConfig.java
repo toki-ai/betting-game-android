@@ -56,7 +56,7 @@ public class BettingConfig {
     // Thanh toán khi kết thúc: win -> + 2x, lose -> 0
     public int settle(boolean win, int amount) {
         if (win) {
-            balance = safeAdd(balance, amount * 2);
+            balance = safeAdd(balance, amount * 3); //vì ban đầu đã -1 + 3 = 2
             return amount; // lợi nhuận ròng
         }
         return 0;

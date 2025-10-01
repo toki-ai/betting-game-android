@@ -13,8 +13,6 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.bettinggame.services.MusicManager;
-
 public class LoginActivity extends AppCompatActivity {
 
     private EditText etUsername;
@@ -34,13 +32,7 @@ public class LoginActivity extends AppCompatActivity {
         tvMusic = findViewById(R.id.tvMusic);
 
         btnMusic.setOnClickListener(v -> {
-            if (!MusicManager.isPlaying()) {
-                MusicManager.startMusic(this);
-                tvMusic.setText("Tắt Nhạc 🎵");
-            } else {
-                MusicManager.stopMusic();
-                tvMusic.setText("Bật Nhạc 🎶");
-            }
+
         });
 
         btnLogin.setOnClickListener(v -> {
