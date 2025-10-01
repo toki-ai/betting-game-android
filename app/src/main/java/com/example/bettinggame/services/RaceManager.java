@@ -20,6 +20,7 @@ import com.example.bettinggame.RaceResultsActivity;
 
 import com.example.bettinggame.model.RaceResult;
 import com.example.bettinggame.model.Duck;
+import com.example.bettinggame.services.AudioManagerUnified;
 
 import pl.droidsonroids.gif.GifDrawable;
 
@@ -74,10 +75,9 @@ public class RaceManager {
         return (int) (dp * activity.getResources().getDisplayMetrics().density);
     }
 
-    public void startRace(int selectedDuckIndex, int currentBetAmount) {
+    public void startRace() {
         if (raceRunning) return;
 
-        // Hỗ trợ đặt nhiều con: tính tổng cược và validate theo số dư
         int[] laneBets = ((MainActivity) activity).getBettingManager().getBetAmounts();
         int totalBet = 0; for (int v : laneBets) totalBet += v;
         if (totalBet <= 0) {
@@ -101,6 +101,9 @@ public class RaceManager {
         btnStart.setText("Đang đua...");
         activity.findViewById(R.id.btnTutorial).setEnabled(false);
         setBetButtonsEnabled(false);
+
+        // Bắt đầu phát nhạc game
+        AudioManagerUnified.startGameMusic(activity);
 
         updateGifThumbsForRace();
         backgroundAnimationManager.startBackgroundAnimations(); // Start background animations
@@ -146,36 +149,57 @@ public class RaceManager {
                                     if (anim != null) anim.cancel();
                                 }
 
-//                                1. Snapshot all ducks' position
+                                // 1. Snapshot all ducks' position
                                 List<RaceResult> results = new ArrayList<>();
                                 for (int j = 0; j < seekBars.length; j++) {
                                     int progress = seekBars[j].getProgress();
                                     Duck duck = DUCK_LIST.get(j);
                                     RaceResult rr = new RaceResult(duck, 0, 0);
-                                    rr.setProgress(progress); // helper for sorting
+                                    rr.setProgress(progress);
                                     results.add(rr);
                                 }
 
-//                                  2. Sort by progress (descending)
+                                // 2. Sort by progress (descending)
                                 results.sort((a, b) -> Integer.compare(b.getProgress(), a.getProgress()));
 
-//                                  3. Assign ranks
+                                // 3. Assign ranks và tính tiền thắng/thua
                                 for (int r = 0; r < results.size(); r++) {
-                                    if (results.get(r).getDuck().getName().equals(DUCK_LIST.get(winnerIndex[0]).getName()) && selectedDuckIndex == winnerIndex[0]) {
-                                        results.get(r).setRank(1);
-                                        results.get(r).setAmountWon(betForRace * 2);
-                                        continue;
-                                    } else if (selectedDuckIndex != winnerIndex[0] && results.get(r).getDuck().getName().equals(DUCK_LIST.get(selectedDuckIndex).getName())) {
-                                       results.get(r).setAmountWon(-betForRace);
-                                    }
                                     results.get(r).setRank(r + 1);
+                                    
+                                    // Tìm lane index của duck này
+                                    int laneIndex = -1;
+                                    for (int k = 0; k < DUCK_LIST.size(); k++) {
+                                        if (DUCK_LIST.get(k).getName().equals(results.get(r).getDuck().getName())) {
+                                            laneIndex = k;
+                                            break;
+                                        }
+                                    }
+                                    
+                                    if (laneIndex >= 0 && laneIndex < betsForRace.length) {
+                                        int betOnThisLane = betsForRace[laneIndex];
+                                        
+                                        if (r == 0) {
+                                            // Rank 1: Thắng gấp đôi
+                                            results.get(r).setAmountWon(betOnThisLane * 2);
+                                        } else if (betOnThisLane > 0) {
+                                            // Đã đặt nhưng thua: mất tiền
+                                            results.get(r).setAmountWon(-betOnThisLane);
+                                        } else {
+                                            // Không đặt
+                                            results.get(r).setAmountWon(0);
+                                        }
+                                    }
                                 }
+                                
                                 seekBars[index].setMax(100);
                                 seekBars[index].setProgress(100);
                                 handlePayoutMulti(index, betsForRace);
                                 resetRace();
-//                                 4. Announce winner and ranking
-                                announceWinner(index,results);
+                                
+                                // Tắt nhạc game khi kết thúc đua
+                                AudioManagerUnified.stopGameMusic();
+                                
+                                announceWinner(index, results);
                             }, 100);
                         }
                     }

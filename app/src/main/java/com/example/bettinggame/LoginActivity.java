@@ -13,14 +13,12 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.bettinggame.services.MusicManager;
+import com.example.bettinggame.services.AudioManagerUnified;
 
 public class LoginActivity extends AppCompatActivity {
 
     private EditText etUsername;
     private Button btnLogin;
-    private ImageButton btnMusic;
-    private TextView tvMusic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,22 +26,31 @@ public class LoginActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_login);
 
+        // Initialize audio
+        AudioManagerUnified.initialize(this);
+
         etUsername = findViewById(R.id.etUsername);
         btnLogin = findViewById(R.id.btnLogin);
-        btnMusic = findViewById(R.id.btnMusic);
-        tvMusic = findViewById(R.id.tvMusic);
 
-        btnMusic.setOnClickListener(v -> {
-            if (!MusicManager.isPlaying()) {
-                MusicManager.startMusic(this);
-                tvMusic.setText("Tắt Nhạc 🎵");
-            } else {
-                MusicManager.stopMusic();
-                tvMusic.setText("Bật Nhạc 🎶");
+        etUsername.addTextChangedListener(new android.text.TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (count > 0) { // Chỉ phát sound khi thêm text
+                    AudioManagerUnified.playTypeSound(LoginActivity.this);
+                }
             }
+            
+            @Override
+            public void afterTextChanged(android.text.Editable s) {}
         });
 
+        // Xóa music button listener
+
         btnLogin.setOnClickListener(v -> {
+            AudioManagerUnified.playButtonSound(this);
             String username = etUsername.getText().toString().trim();
             if (username.isEmpty()) {
                 Toast.makeText(this, "Please enter username", Toast.LENGTH_SHORT).show();
@@ -67,5 +74,30 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        AudioManagerUnified.onActivityResumed(this);
+        // Xóa updateMusicUI
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        AudioManagerUnified.onActivityPaused();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        AudioManagerUnified.onLowMemory();
+    }
+
+    @Override
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+        AudioManagerUnified.onTrimMemory(level);
     }
 }
