@@ -22,7 +22,7 @@ public class FinishLineManager {
         final float initialFinishX = screenWidth + 400;
 
         finishLine.post(() -> {
-            targetFinishX = seekBar.getX() + seekBar.getWidth();
+            targetFinishX = screenWidth - finishLine.getWidth();
             finishLine.setX(initialFinishX);
             finishLineMoving = true;
             handler.post(finishRunnable);
