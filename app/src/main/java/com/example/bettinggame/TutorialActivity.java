@@ -79,12 +79,16 @@ public class TutorialActivity extends AppCompatActivity {
 
     private void loadTutorialSteps() {
         tutorialSteps = new ArrayList<>();
-        // Replace with your actual image resources and descriptions
-        tutorialSteps.add(new TutorialStep(R.drawable.placeholder_image_1, "Bước 1: Chào mừng bạn đến với Game Đua Vịt!"));
-        tutorialSteps.add(new TutorialStep(R.drawable.placeholder_image_2, "Bước 2: Tìm hiểu cách đặt cược vào những chú vịt yêu thích của bạn."));
-        tutorialSteps.add(new TutorialStep(R.drawable.placeholder_image_3, "Bước 3: Theo dõi cuộc đua và xem vịt nào sẽ về đích đầu tiên!"));
-        tutorialSteps.add(new TutorialStep(R.drawable.placeholder_image_1, "Bước 4: Xem kết quả và nhận phần thưởng nếu bạn thắng!"));
-        // Add more steps as needed
+        tutorialSteps.add(new TutorialStep(R.drawable.gameplay, "Đây là màn hình chính của trò chơi, nơi bạn có thể thấy các đường đua và những chú vịt."));
+        tutorialSteps.add(new TutorialStep(R.drawable.balance, "Đây là số dư hiện tại của bạn. Hãy theo dõi để biết mình còn bao nhiêu tiền nhé!"));
+        tutorialSteps.add(new TutorialStep(R.drawable.music, "Bạn có thể bật hoặc tắt nhạc nền của trò chơi bằng nút này."));
+        tutorialSteps.add(new TutorialStep(R.drawable.tutorial, "Nhấn vào đây để xem lại hướng dẫn chơi game bất cứ lúc nào."));
+        tutorialSteps.add(new TutorialStep(R.drawable.logout, "Sử dụng nút này để đăng xuất khỏi tài khoản hiện tại."));
+        tutorialSteps.add(new TutorialStep(R.drawable.deposit, "Nếu hết tiền, bạn có thể nạp thêm bằng cách nhấn vào nút này."));
+        tutorialSteps.add(new TutorialStep(R.drawable.deposit_detail, "Nhập số tiền bạn muốn nạp và xác nhận."));
+        tutorialSteps.add(new TutorialStep(R.drawable.bet, "Chọn một chú vịt và nhấn nút 'Đặt' để đặt cược cho chú vịt đó."));
+        tutorialSteps.add(new TutorialStep(R.drawable.bet_detail, "Nhập số tiền bạn muốn cược cho chú vịt đã chọn."));
+        tutorialSteps.add(new TutorialStep(R.drawable.start, "Sau khi đã sẵn sàng, nhấn 'Bắt đầu đua' để cuộc đua bắt đầu!"));
     }
 
     private void updateNavigationButtons(int position) {
@@ -95,16 +99,14 @@ public class TutorialActivity extends AppCompatActivity {
             return;
         }
 
-        // Previous button visibility
         if (position == 0) {
-            buttonPrevious.setVisibility(View.INVISIBLE); // Hoặc View.GONE nếu bạn không muốn nó chiếm không gian
+            buttonPrevious.setVisibility(View.INVISIBLE);
         } else {
             buttonPrevious.setVisibility(View.VISIBLE);
         }
 
-        // Next button and Start Game button visibility
         if (position == tutorialSteps.size() - 1) {
-            buttonNext.setVisibility(View.INVISIBLE); // Hoặc View.GONE
+            buttonNext.setVisibility(View.INVISIBLE);
             buttonStartGame.setVisibility(View.VISIBLE);
         } else {
             buttonNext.setVisibility(View.VISIBLE);
