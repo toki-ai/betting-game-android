@@ -4,58 +4,55 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#E8F5FF"
     tools:context=".TutorialActivity">
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPagerTutorial"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="400dp"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/guidelineNav"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guidelineNav"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.85" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintVertical_bias="0.5" />
 
     <ImageButton
         android:id="@+id/buttonPrevious"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@android:drawable/ic_media_previous" 
+        android:background="@android:color/transparent"
+        android:src="@android:drawable/ic_media_previous"
         android:contentDescription="Previous Step"
-        app:layout_constraintTop_toBottomOf="@id/guidelineNav"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="@id/viewPagerTutorial"
+        app:layout_constraintBottom_toBottomOf="@id/viewPagerTutorial"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/buttonNext"
-        android:layout_marginStart="32dp"
-        android:visibility="invisible" /> <!-- Initially invisible -->
+        android:layout_marginStart="90dp"
+        android:visibility="invisible" />
 
     <ImageButton
         android:id="@+id/buttonNext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@android:drawable/ic_media_next" 
+        android:src="@android:drawable/ic_media_next"
         android:contentDescription="Next Step"
-        app:layout_constraintTop_toBottomOf="@id/guidelineNav"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/buttonPrevious"
+        android:background="@android:color/transparent"
+        app:layout_constraintTop_toTopOf="@id/viewPagerTutorial"
+        app:layout_constraintBottom_toBottomOf="@id/viewPagerTutorial"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginEnd="32dp" />
+        android:layout_marginEnd="90dp" />
 
-    <Button
-        android:id="@+id/buttonStartGame"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Start Game"
-        app:layout_constraintTop_toBottomOf="@id/guidelineNav"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:visibility="gone" /> <!-- Initially gone -->
+        <Button
+            android:id="@+id/buttonStartGame"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#2196F3"
+            android:text="Chơi ngay!"
+            android:layout_gravity="center"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="32dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

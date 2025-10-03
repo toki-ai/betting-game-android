@@ -38,7 +38,7 @@ public class BettingManager {
 
         final EditText input = new EditText(activity);
         input.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
-        input.setHint("Nhập tiền (min 100)");
+        input.setHint("Nhập số xu bạn muốn đặt cược (ít nhất 100)");
         
         // Xóa typing sound để giảm tải
         

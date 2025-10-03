@@ -86,12 +86,11 @@ public class TutorialActivity extends AppCompatActivity {
         tutorialSteps = new ArrayList<>();
         tutorialSteps.add(new TutorialStep(R.drawable.gameplay, "Đây là màn hình chính của trò chơi, nơi bạn có thể thấy các đường đua và những chú vịt."));
         tutorialSteps.add(new TutorialStep(R.drawable.balance, "Đây là số dư hiện tại của bạn. Hãy theo dõi để biết mình còn bao nhiêu tiền nhé!"));
-        tutorialSteps.add(new TutorialStep(R.drawable.music, "Bạn có thể bật hoặc tắt nhạc nền của trò chơi bằng nút này."));
         tutorialSteps.add(new TutorialStep(R.drawable.tutorial, "Nhấn vào đây để xem lại hướng dẫn chơi game bất cứ lúc nào."));
         tutorialSteps.add(new TutorialStep(R.drawable.logout, "Sử dụng nút này để đăng xuất khỏi tài khoản hiện tại."));
         tutorialSteps.add(new TutorialStep(R.drawable.deposit, "Nếu hết tiền, bạn có thể nạp thêm bằng cách nhấn vào nút này."));
         tutorialSteps.add(new TutorialStep(R.drawable.deposit_detail, "Nhập số tiền bạn muốn nạp và xác nhận."));
-        tutorialSteps.add(new TutorialStep(R.drawable.bet, "Chọn một chú vịt và nhấn nút 'Đặt' để đặt cược cho chú vịt đó."));
+    tutorialSteps.add(new TutorialStep(R.drawable.bet, "Chọn 🦆 và nhấn nút 'Đặt' để đặt cược cho chú vịt đó. Bạn có thể đặt cược cho nhiều vịt khác nhau.<br> 🏅 Nếu thắng cuộc đua, bạn sẽ nhận được số tiền <b>gấp đôi</b> số tiền đã cược.<br> 😭 Nếu thua, số tiền cược sẽ bị trừ khỏi số dư của bạn "));
         tutorialSteps.add(new TutorialStep(R.drawable.bet_detail, "Nhập số tiền bạn muốn cược cho chú vịt đã chọn."));
         tutorialSteps.add(new TutorialStep(R.drawable.start, "Sau khi đã sẵn sàng, nhấn 'Bắt đầu đua' để cuộc đua bắt đầu!"));
     }

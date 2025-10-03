@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
     private void initializeUI() {
         tvUsername = findViewById(R.id.tvUsername); 
         if (tvUsername != null) {
-            tvUsername.setText(playerName);
+            tvUsername.setText("Nick name: " + playerName);
         }
 
         SharedPreferences prefs = getSharedPreferences(Constants.PREFS_NAME, Context.MODE_PRIVATE);
@@ -168,12 +168,10 @@ public class MainActivity extends AppCompatActivity {
         btnDeposit.setOnClickListener(v -> {
             AudioManagerUnified.playButtonSound(this);
             android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
-            builder.setTitle("Nạp thêm xu");
+            builder.setTitle("Nạp thêm xu (tối đa: 10.000)");
             final android.widget.EditText input = new android.widget.EditText(this);
             input.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
-            
-            // Xóa typing sound để giảm tải
-            
+
             builder.setView(input);
             builder.setPositiveButton("Nạp", (dialog, which) -> {
                 // Xóa sound khỏi dialog buttons
@@ -184,7 +182,9 @@ public class MainActivity extends AppCompatActivity {
                 } catch (Exception e) {
                     addAmount = 0;
                 }
-                if (addAmount > 0) {
+                if (addAmount > 10000) {
+                    Toast.makeText(this, "Tối đa 10.000 xu!", Toast.LENGTH_SHORT).show();
+                } else if (addAmount > 0) {
                     betManager.setBalance(betManager.getBalance() + addAmount);
                     SharedPreferences prefs = getSharedPreferences(Constants.PREFS_NAME, Context.MODE_PRIVATE);
                     prefs.edit().putInt(playerName, betManager.getBalance()).apply();
@@ -223,7 +223,7 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressLint("SetTextI18n")
     public void updateBalanceText() {
-           tvBalance.setText("Balance: " + betManager.formatInt(betManager.getBalance()));
+           tvBalance.setText("Số lượng xu: " + betManager.formatInt(betManager.getBalance()));
 
            SharedPreferences prefs = getSharedPreferences(Constants.PREFS_NAME, Context.MODE_PRIVATE);
            prefs.edit().putInt(playerName, betManager.getBalance()).apply();

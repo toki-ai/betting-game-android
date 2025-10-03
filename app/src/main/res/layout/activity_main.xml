@@ -58,7 +58,7 @@
                 android:id="@+id/tvUsername"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Player: User1"
+                android:text="Nick name: User1"
                 android:textStyle="bold"
                 android:textSize="14sp" />
 
@@ -69,17 +69,17 @@
                     android:id="@+id/tvBalance"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Balance: 1000"
+                    android:text="Số lượng xu: 1000"
                     android:textStyle="bold"
                     android:layout_marginTop="10dp"
                     android:textSize="14sp" />
 
                 <ImageButton
                     android:id="@+id/btnDeposit"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
                     android:layout_marginLeft="10dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="5dp"
                     android:src="@drawable/ic_deposit"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="Deposit"
@@ -101,8 +101,8 @@
 
         <ImageButton
             android:id="@+id/btnLogOut"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:src="@drawable/ic_logout"
             android:layout_marginEnd="12dp"
             android:background="?attr/selectableItemBackgroundBorderless"
@@ -114,17 +114,18 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="7sp"
+            android:textSize="10sp"
             android:text="Đăng xuất"
             app:layout_constraintTop_toBottomOf="@+id/btnLogOut"
-            app:layout_constraintStart_toStartOf="@+id/btnLogOut"/>
+            app:layout_constraintStart_toStartOf="@+id/btnLogOut"
+            app:layout_constraintEnd_toEndOf="@+id/btnLogOut"/>
 
         <ImageButton
             android:id="@+id/btnTutorial"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:src="@drawable/ic_book"
-            android:layout_marginEnd="24dp"
+            android:layout_marginEnd="30dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Tutorial"
             app:layout_constraintTop_toTopOf="@+id/btnLogOut"
@@ -134,10 +135,11 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="7sp"
+            android:textSize="10sp"
             android:text="Hướng dẫn"
             app:layout_constraintTop_toBottomOf="@+id/btnTutorial"
-            app:layout_constraintStart_toStartOf="@+id/btnTutorial"/>
+            app:layout_constraintStart_toStartOf="@+id/btnTutorial"
+            app:layout_constraintEnd_toEndOf="@+id/btnTutorial"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -219,15 +221,16 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     android:background="#66000000"
                     android:textColor="#FFFFFF"
-                    android:padding="6dp"
-                    android:layout_marginLeft="20dp"
+                    android:paddingVertical="12dp"
+                    android:layout_marginLeft="40dp"
+                    android:paddingHorizontal="20sp"
                     android:text="0"
                     android:visibility="gone" />
 
                 <ImageButton
                     android:id="@+id/btnCancelBet1"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:src="@drawable/ic_cancel"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="Cancel Bet 1"
@@ -236,7 +239,8 @@
                     app:layout_constraintStart_toEndOf="@id/tvBet1"
                     app:layout_constraintTop_toTopOf="@id/tvBet1"
                     app:layout_constraintBottom_toBottomOf="@id/tvBet1"
-                    android:layout_marginStart="4dp" />
+                    android:layout_marginStart="-6dp"
+                    android:layout_marginBottom="30dp"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <!-- Lane 2 -->
@@ -272,13 +276,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical|start"
-                    android:layout_marginLeft="20dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
                     android:background="#66000000"
                     android:textColor="#FFFFFF"
-                    android:padding="6dp"
+                    android:paddingVertical="12dp"
+                    android:layout_marginLeft="40dp"
+                    android:paddingHorizontal="20sp"
                     android:text="0"
                     android:visibility="gone" />
 
@@ -286,6 +291,8 @@
                     android:id="@+id/btnCancelBet2"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
+                    android:layout_marginStart="-6dp"
+                    android:layout_marginBottom="30dp"
                     android:src="@drawable/ic_cancel"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="Cancel Bet 2"
@@ -293,8 +300,7 @@
                     android:visibility="gone"
                     app:layout_constraintStart_toEndOf="@id/tvBet2"
                     app:layout_constraintTop_toTopOf="@id/tvBet2"
-                    app:layout_constraintBottom_toBottomOf="@id/tvBet2"
-                    android:layout_marginStart="4dp" />
+                    app:layout_constraintBottom_toBottomOf="@id/tvBet2" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <!-- Lane 3 -->
@@ -335,8 +341,9 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     android:background="#66000000"
                     android:textColor="#FFFFFF"
-                    android:padding="6dp"
-                    android:layout_marginLeft="20dp"
+                    android:paddingVertical="12dp"
+                    android:layout_marginLeft="40dp"
+                    android:paddingHorizontal="20sp"
                     android:text="0"
                     android:visibility="gone" />
 
@@ -352,7 +359,8 @@
                     app:layout_constraintStart_toEndOf="@id/tvBet3"
                     app:layout_constraintTop_toTopOf="@id/tvBet3"
                     app:layout_constraintBottom_toBottomOf="@id/tvBet3"
-                    android:layout_marginStart="4dp" />
+                    android:layout_marginStart="-6dp"
+                    android:layout_marginBottom="30dp" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <!-- Lane 4 -->
@@ -393,8 +401,9 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     android:background="#66000000"
                     android:textColor="#FFFFFF"
-                    android:padding="6dp"
-                    android:layout_marginLeft="20dp"
+                    android:paddingVertical="12dp"
+                    android:layout_marginLeft="40dp"
+                    android:paddingHorizontal="20sp"
                     android:text="0"
                     android:visibility="gone" />
 
@@ -410,7 +419,8 @@
                     app:layout_constraintStart_toEndOf="@id/tvBet4"
                     app:layout_constraintTop_toTopOf="@id/tvBet4"
                     app:layout_constraintBottom_toBottomOf="@id/tvBet4"
-                    android:layout_marginStart="4dp" />
+                    android:layout_marginStart="-6dp"
+                    android:layout_marginBottom="30dp" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
 
