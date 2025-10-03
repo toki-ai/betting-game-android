@@ -2,6 +2,7 @@ package com.example.bettinggame;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.text.Html;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -32,7 +33,7 @@ public class TutorialAdapter extends RecyclerView.Adapter<TutorialAdapter.Tutori
     public void onBindViewHolder(@NonNull TutorialViewHolder holder, int position) {
         TutorialStep step = tutorialSteps.get(position);
         holder.imageViewTutorial.setImageResource(step.getImageResId());
-        holder.textViewTutorialDescription.setText(step.getDescription());
+        holder.textViewTutorialDescription.setText(Html.fromHtml(step.getDescription()));
     }
 
     @Override

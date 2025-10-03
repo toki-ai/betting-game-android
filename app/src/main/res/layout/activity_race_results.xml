@@ -63,7 +63,7 @@
         android:layout_marginEnd="48dp"
         android:layout_marginBottom="8dp"
         android:backgroundTint="@android:color/holo_green_light"
-        android:text="Chơi Mới"
+        android:text="Chơi ván mới"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toTopOf="@id/buttonQuit"
         app:layout_constraintEnd_toEndOf="parent"
