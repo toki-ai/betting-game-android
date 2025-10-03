@@ -25,6 +25,7 @@ import com.example.bettinggame.services.AudioManagerUnified;
 import pl.droidsonroids.gif.GifDrawable;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -313,7 +314,8 @@ public class RaceManager {
         Intent intent = new Intent(activity, RaceResultsActivity.class);
         if (activity instanceof MainActivity) {
             intent.putExtra("username", playerName);
-            intent.putParcelableArrayListExtra("raceResults", new ArrayList<>(results));
+            // Do RaceResult đã là Serializable, ta dùng putExtra cho cả ArrayList
+            intent.putExtra("raceResults", new ArrayList<Serializable>(results));
         }
         activity.startActivity(intent);
     }
