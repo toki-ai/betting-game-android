@@ -1,8 +1,8 @@
 package com.example.bettinggame.model;
 
 public class TutorialStep {
-    private int imageResId; // ID của ảnh drawable placeholder
-    private String description; // Nội dung hướng dẫn
+    private int imageResId;
+    private String description;
 
     public TutorialStep(int imageResId, String description) {
         this.imageResId = imageResId;

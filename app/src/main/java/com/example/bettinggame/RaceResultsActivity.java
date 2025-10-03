@@ -44,12 +44,11 @@ public class RaceResultsActivity extends AppCompatActivity {
         Button buttonNewGame = findViewById(R.id.buttonNewGame);
         Button buttonQuit = findViewById(R.id.buttonQuit);
 
-        // Nhận danh sách raceResultsList từ Intent
+        // Nhận danh sách raceResultsList từ Intent bằng Serializable
         if (getIntent().hasExtra("raceResults")) {
-            raceResultsList = getIntent().getParcelableArrayListExtra("raceResults", RaceResult.class);
+            raceResultsList = (ArrayList<RaceResult>) getIntent().getSerializableExtra("raceResults", ArrayList.class);
         }
 
-        // Fallback nếu không có dữ liệu nào được truyền hoặc lỗi xảy ra
         if (raceResultsList == null) {
             createSampleData();
         }
@@ -67,7 +66,6 @@ public class RaceResultsActivity extends AppCompatActivity {
                 AudioManagerUnified.playButtonSound(RaceResultsActivity.this);
                 Intent intent = new Intent(RaceResultsActivity.this, MainActivity.class);
                 intent.putExtra("username", playerName);
-                // Bỏ flags để không clear stack và giữ music state
                 startActivity(intent);
                 finish();
             }
@@ -82,7 +80,6 @@ public class RaceResultsActivity extends AppCompatActivity {
         });
     }
 
-    // Phương thức tạo dữ liệu mẫu (chỉ dùng làm fallback hoặc cho testing ban đầu)
     private void createSampleData() {
         raceResultsList = new ArrayList<>();
         raceResultsList.add(new RaceResult(new Duck("Vịt Donald Mẫu"), 2, -50.0));
